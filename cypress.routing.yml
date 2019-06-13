@@ -1,0 +1,6 @@
+cypress.entity_url:
+  path: '/cypress/entity/{entity_type}/{link_type}'
+  defaults:
+    _controller: '\Drupal\cypress\Controller\EntityUrlController::entityRedirect'
+  requirements:
+    _access: 'TRUE'

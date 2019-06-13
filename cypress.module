@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * Check if cypress helpers are enabled.
+ *
+ * @return bool
+ */
+function cypress_enabled() {
+  return getenv('DRUPAL_CYPRESS') !== 'off';
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function cypress_module_implements_alter(&$implementations, $hook) {
+  // Make sure our hooks run last.
+  if (in_array($hook, ['page_top'])) {
+    $group = $implementations['cypress'];
+    unset($implementations['cypress']);
+    $implementations['cypress'] = $group;
+  }
+}
+
+/**
+ * Disable the admin toolbar by default, since it often.
+ *
+ * Often interferes with cypress click handling. Can be enabled by setting the
+ * `X-CYPRESS-TOOLBAR` request header.
+ *
+ * @param array $page_top
+ */
+function cypress_page_top(array &$page_top) {
+  if (cypress_enabled() && !Drupal::request()->headers->has('X-CYPRESS-TOOLBAR')) {
+    unset($page_top['toolbar']);
+  }
+}

@@ -1,0 +1,4 @@
+name: 'Cypress'
+type: module
+description: 'Helpers for E2E testing with Cypress.'
+core: 8.x

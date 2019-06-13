@@ -1,0 +1,17 @@
+services:
+  cypress.negotiator.development:
+    class: Drupal\cypress\Negotiator\CypressWorkspaceNegotiator
+    arguments: ['@entity_type.manager']
+    tags:
+      - { name: workspace_negotiator, priority: 9999 }
+  cypress.authentication.development:
+    class: Drupal\cypress\Authentication\Provider\CypressAuthenticationProvider
+    arguments: ['@entity_type.manager']
+    tags:
+      - { name: authentication_provider, provider_id: 'cypress', priority: 999 }
+
+  cypress.config_factory_override:
+    class: Drupal\cypress\ConfigOverrides
+    arguments: ['@config.storage', '@?plugin.manager.language_negotiation_method']
+    tags:
+      - { name: config.factory.override, priority: -253 }
