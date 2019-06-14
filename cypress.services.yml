@@ -1,12 +1,17 @@
 services:
+  cypress.event_subsriber:
+    class: Drupal\cypress\EventSubscriber
+    arguments: ['@session']
+    tags:
+      - { name: 'event_subscriber' }
   cypress.negotiator.development:
     class: Drupal\cypress\Negotiator\CypressWorkspaceNegotiator
-    arguments: ['@entity_type.manager']
+    arguments: ['@entity_type.manager', '@session']
     tags:
       - { name: workspace_negotiator, priority: 9999 }
   cypress.authentication.development:
     class: Drupal\cypress\Authentication\Provider\CypressAuthenticationProvider
-    arguments: ['@entity_type.manager']
+    arguments: ['@entity_type.manager', '@session']
     tags:
       - { name: authentication_provider, provider_id: 'cypress', priority: 999 }
 

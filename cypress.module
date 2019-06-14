@@ -30,7 +30,9 @@ function cypress_module_implements_alter(&$implementations, $hook) {
  * @param array $page_top
  */
 function cypress_page_top(array &$page_top) {
-  if (cypress_enabled() && !Drupal::request()->headers->has('X-CYPRESS-TOOLBAR')) {
+  /** @var \Symfony\Component\HttpFoundation\Session\SessionInterface $session */
+  $session = \Drupal::service('session');
+  if (cypress_enabled() && !($session->has('CYPRESS_TOOLBAR') || \Drupal::request()->headers->has('X-CYPRESS-TOOLBAR'))) {
     unset($page_top['toolbar']);
   }
 }
