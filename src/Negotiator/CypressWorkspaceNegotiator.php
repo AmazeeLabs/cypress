@@ -48,6 +48,13 @@ class CypressWorkspaceNegotiator implements WorkspaceNegotiatorInterface {
    * {@inheritDoc}
    */
   public function applies(Request $request) {
+    // Don't apply to the core workflow activate path, or the session based
+    // negotiator won't work any more.
+    $activatePath = "/^\/admin\/config\/workflow\/workspaces\/manage\/.*\/activate$/";
+    if (preg_match($activatePath, $request->getPathInfo())) {
+      return FALSE;
+    }
+
     return cypress_enabled() && ($this->session->has('CYPRESS_WORKSPACE') || $request->headers->has('X-CYPRESS-WORKSPACE'));
   }
 
