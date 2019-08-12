@@ -44,12 +44,16 @@ class CypressAuthenticationProvider implements AuthenticationProviderInterface, 
     return cypress_enabled() && ($this->session->has('CYPRESS_USER') || $request->headers->has('X-CYPRESS-USER'));
   }
 
+  protected function getUserFromRequest($request) {
+    return $request->headers->get('X-CYPRESS-USER') ?: $this->session->get('CYPRESS_USER');
+  }
+
   /**
    * {@inheritDoc}
    */
   public function authenticate(Request $request) {
     $matches = $this->userStorage->loadByProperties([
-      'name' => $this->session->get('CYPRESS_USER') ?: $request->headers->get('X-CYPRESS-USER'),
+      'name' => $this->getUserFromRequest($request),
     ]);
     return $matches ? array_pop($matches) : NULL;
   }
