@@ -62,7 +62,11 @@ class CypressWorkspaceNegotiator implements WorkspaceNegotiatorInterface {
    * {@inheritDoc}
    */
   public function getActiveWorkspace(Request $request) {
-    return $this->workspaceStorage->load($this->session->get('CYPRESS_WORKSPACE') ?: $request->headers->get('X-CYPRESS-WORKSPACE'));
+    return $this->workspaceStorage->load($this->getWorkspace($request));
+  }
+
+  protected function getWorkspace($request) {
+    return $request->headers->get('X-CYPRESS-WORKSPACE') ?: $this->session->get('CYPRESS_WORKSPACE');
   }
 
   /**
