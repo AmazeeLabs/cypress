@@ -1,14 +1,22 @@
 {
-  "name": "drupal/cypress",
-  "type": "drupal-module",
-  "description": "Cypress E2E testing helpers",
-  "license": "GPL-2.0-or-later",
-  "minimum-stability": "dev",
-  "extra": {
-    "patches": {
-      "drupal/core": {
-        "Language negotiation weight": "https://www.drupal.org/files/issues/2018-10-17/3007386-language-negotiator-weight-2.patch"
-      }
+    "name": "drupal/cypress",
+    "type": "drupal-module",
+    "description": "Cypress E2E testing helpers",
+    "license": "GPL-2.0-or-later",
+    "minimum-stability": "dev",
+    "extra": {
+        "patches": {
+            "drupal/core": {
+                "Language negotiation weight": "https://www.drupal.org/files/issues/2018-10-17/3007386-language-negotiator-weight-2.patch"
+            }
+        },
+        "drush": {
+            "services": {
+                "drush.services.yml": "^9"
+            }
+        }
+    },
+    "require": {
+        "ext-json": "*"
     }
-  }
 }

@@ -1,0 +1,6 @@
+{
+  "name": "drupal-cypress-helpers",
+  "dependencies": {
+    "cypress-cucumber-preprocessor": "^1.16.0"
+  }
+}
