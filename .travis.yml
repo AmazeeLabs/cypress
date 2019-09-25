@@ -1,0 +1,43 @@
+language: php
+sudo: false
+
+php:
+  - 7.2
+
+env:
+  global:
+    - DRUPAL_BUILD_DIR=$TRAVIS_BUILD_DIR/../drupal
+    - DRUPAL_TEST_DB_URL=sqlite://localhost/sites/default/files/db.sqlite
+    - DRUPAL_TEST_BASE_URL=http://localhost:8888
+    - TRAVIS=true
+    - DRUPAL_CORE=8.7.x
+# Cache composer downloads.
+cache:
+  directories:
+    - $HOME/.composer
+
+before_install:
+  # Disable xdebug.
+  - phpenv config-rm xdebug.ini
+
+  # Composer  setup
+  - composer self-update
+  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - composer global require drush/drush
+
+install:
+  # Create the database.
+  - mysql -e 'create database cypress'
+
+  # Download Drupal 8 core from the Github mirror because it is faster.
+  - git clone --branch $DRUPAL_CORE --depth 1 https://github.com/drupal/drupal.git $DRUPAL_BUILD_DIR
+
+  # Reference the module in the build site.
+  - ln -s $TRAVIS_BUILD_DIR $DRUPAL_BUILD_DIR/modules/cypress
+
+  # Bring in the module dependencies without requiring a merge plugin. The
+  # require also triggers a full 'composer install'.
+  - composer --working-dir=$DRUPAL_BUILD_DIR run-script drupal-phpunit-upgrade
+
+script:
+  - vendor/bin/phpunit modules/cypress
