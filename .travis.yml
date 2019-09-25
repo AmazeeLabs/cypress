@@ -39,7 +39,7 @@ install:
 
 script:
   - cd $DRUPAL_BUILD_DIR
-  - phpunit --bootstrap=tests/bootstrap.php modules/cypress
-  - drush si minimal -y
+  - phpunit --bootstrap=core/tests/bootstrap.php modules/cypress
+  - drush si minimal -y --db-url=$DRUPAL_TEST_DB_URL
   - drush en cypress
   - drush cypress:run
