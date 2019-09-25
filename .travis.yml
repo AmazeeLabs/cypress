@@ -24,6 +24,7 @@ before_install:
   - composer self-update
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
   - composer global require drush/drush
+  - composer global require phpunit/phpunit
 
 install:
   # Download Drupal 8 core from the Github mirror because it is faster.
@@ -37,5 +38,6 @@ install:
   - composer --working-dir=$DRUPAL_BUILD_DIR run-script drupal-phpunit-upgrade
 
 script:
-  - vendor/bin/phpunit modules/cypress
+  - phpunit modules/cypress
+  - drush en cypress
   - drush cypress:run
