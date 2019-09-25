@@ -39,6 +39,6 @@ install:
 
 script:
   - cd $DRUPAL_BUILD_DIR
-  - phpunit modules/cypress
+  - phpunit --bootstrap=tests/bootstrap.php modules/cypress
   - drush en cypress
   - drush cypress:run
