@@ -15,7 +15,7 @@ env:
     - DRUPAL_TEST_DB_URL=sqlite://localhost/sites/default/files/db.sqlite
     - DRUPAL_TEST_BASE_URL=http://localhost:8888
     - TRAVIS=true
-    - DRUPAL_CORE=8.7.x
+    - DRUPAL_CORE=8.8.x
 # Cache composer downloads.
 cache:
   directories:
