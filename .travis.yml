@@ -4,6 +4,11 @@ sudo: false
 php:
   - 7.2
 
+addons:
+  apt:
+    packages:
+      - libgconf-2-4
+
 env:
   global:
     - DRUPAL_BUILD_DIR=$TRAVIS_BUILD_DIR/../drupal
@@ -29,13 +34,14 @@ before_install:
 install:
   # Download Drupal 8 core from the Github mirror because it is faster.
   - git clone --branch $DRUPAL_CORE --depth 1 https://github.com/drupal/drupal.git $DRUPAL_BUILD_DIR
+  - cd $DRUPAL_BUILD_DIR && git checkout 8.7.6
 
   # Reference the module in the build site.
   - ln -s $TRAVIS_BUILD_DIR $DRUPAL_BUILD_DIR/modules/cypress
 
   # Bring in the module dependencies without requiring a merge plugin. The
   # require also triggers a full 'composer install'.
-  - composer --working-dir=$DRUPAL_BUILD_DIR run-script drupal-phpunit-upgrade
+  - composer update phpunit/phpunit phpspec/prophecy --with-dependencies --no-progress
 
 script:
   - cd $DRUPAL_BUILD_DIR
