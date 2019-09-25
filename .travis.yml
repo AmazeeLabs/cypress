@@ -15,7 +15,7 @@ env:
     - DRUPAL_TEST_DB_URL=sqlite://localhost/sites/default/files/db.sqlite
     - DRUPAL_TEST_BASE_URL=http://localhost:8888
     - TRAVIS=true
-    - DRUPAL_CORE=8.8.x
+    - DRUPAL_CORE=8.7.x
 # Cache composer downloads.
 cache:
   directories:
@@ -37,6 +37,8 @@ install:
 
   # Reference the module in the build site.
   - ln -s $TRAVIS_BUILD_DIR $DRUPAL_BUILD_DIR/modules/cypress
+
+  - composer --working-dir=$DRUPAL_BUILD_DIR install
 
 script:
   - cd $DRUPAL_BUILD_DIR
