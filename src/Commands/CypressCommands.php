@@ -139,6 +139,7 @@ class CypressCommands extends DrushCommands {
         'integrationFolder' => 'integration',
         'pluginsFile' => 'plugins.js',
         'supportFile' => 'support.js',
+        'video' => FALSE,
         // TODO: Make configurable.
         'baseUrl' =>  'http://localhost:8888',
       ], JSON_PRETTY_PRINT)
