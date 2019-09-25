@@ -2,11 +2,13 @@
 
 namespace Drupal\Tests\cypress\Unit\Commands;
 
+use Consolidation\Log\Logger;
 use Drupal\Core\Extension\Extension;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\cypress\Commands\CypressCommands;
 use Drupal\Tests\UnitTestCase;
 use org\bovigo\vfs\vfsStream;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
@@ -124,7 +126,7 @@ class CypressCommandsTest extends UnitTestCase {
       ],
     ], $vfs);
 
-    return new CypressCommands(
+    $command = new CypressCommands(
       $vfs->url(),
       $vfs->url() . '/.cypress',
       $npmInstall,
@@ -134,6 +136,9 @@ class CypressCommandsTest extends UnitTestCase {
       new VfsFileSystem(),
       ['extra' => './extra']
     );
+    $logger = new Logger(new NullOutput());
+    $command->setLogger($logger);
+    return $command;
   }
 
   /**
@@ -199,7 +204,7 @@ class CypressCommandsTest extends UnitTestCase {
       '.cypress' => [
       ],
     ]);
-    $this->npmInstall->run()->shouldBeCalledOnce();
+    $this->npmInstall->mustRun()->shouldBeCalledOnce();
     $commands->init();
   }
 
@@ -212,7 +217,7 @@ class CypressCommandsTest extends UnitTestCase {
         'package.json' => '{"name":"foobar"}',
       ],
     ]);
-    $this->npmInstall->run()->shouldBeCalledOnce();
+    $this->npmInstall->mustRun()->shouldBeCalledOnce();
     $commands->init();
   }
 
@@ -224,7 +229,7 @@ class CypressCommandsTest extends UnitTestCase {
       '.cypress' => [
       ],
     ]);
-    $this->npmInstall->run()->shouldBeCalledTimes(2);
+    $this->npmInstall->mustRun()->shouldBeCalledTimes(2);
     $commands->init();
     $commands->init();
   }
@@ -238,7 +243,7 @@ class CypressCommandsTest extends UnitTestCase {
         'node_modules' => [],
       ],
     ]);
-    $this->npmInstall->run()->shouldBeCalledTimes(1);
+    $this->npmInstall->mustRun()->shouldBeCalledTimes(1);
     $commands->init();
     $commands->init();
   }
