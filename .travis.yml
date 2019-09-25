@@ -38,6 +38,7 @@ install:
   - composer --working-dir=$DRUPAL_BUILD_DIR run-script drupal-phpunit-upgrade
 
 script:
+  - cd $DRUPAL_BUILD_DIR
   - phpunit modules/cypress
   - drush en cypress
   - drush cypress:run
