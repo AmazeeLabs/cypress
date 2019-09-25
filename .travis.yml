@@ -45,4 +45,4 @@ script:
 #  - phpunit --bootstrap=core/tests/bootstrap.php modules/cypress
   - drush si minimal -y --db-url=$DRUPAL_TEST_DB_URL
   - drush en cypress
-  - drush -i -d cypress:run
+  - drush -d cypress:run
