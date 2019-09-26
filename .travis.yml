@@ -28,7 +28,7 @@ before_install:
   - composer self-update
   # Download Drupal
   - curl -O https://ftp.drupal.org/files/projects/drupal-$DRUPAL_VERSION.tar.gz
-  - tar -xvfz drupal-$DRUPAL_VERSION.tar.gz -C $TRAVIS_BUILD_DIR/../
+  - tar -xvf drupal-$DRUPAL_VERSION.tar.gz -C $TRAVIS_BUILD_DIR/../
   - rm $DRUPAL_VERSION.tar.gz
 
 install:
