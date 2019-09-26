@@ -121,17 +121,17 @@ class CypressCommands extends DrushCommands {
   public function init() {
     $this->logger()->notice('Preparing Cypress setup.');
     if (!$this->fileSystem->exists($this->cypressRoot)) {
-      $this->logger()->debug('Creating cypress base directory.');
+      $this->logger()->debug("Creating cypress base directory at '{$this->cypressRoot}'.");
       $this->fileSystem->mkdir($this->cypressRoot);
     }
 
     $currentPackageJson = NULL;
     if ($this->fileSystem->exists($this->cypressRoot . '/package.json')) {
-      $this->logger()->debug('Reading existing package.json.');
+      $this->logger()->debug("Reading existing package.json from '{$this->cypressRoot}'.");
       $currentPackageJson = file_get_contents($this->cypressRoot . '/package.json');
     }
 
-    $this->logger()->debug('Writing cypress.json.');
+    $this->logger()->debug("Writing cypress.json to '{$this->cypressRoot}'.");
     $this->fileSystem->dumpFile(
       $this->cypressRoot . '/cypress.json',
       json_encode([
@@ -145,7 +145,7 @@ class CypressCommands extends DrushCommands {
       ], JSON_PRETTY_PRINT)
     );
 
-    $this->logger()->debug('Clearing test directories.');
+    $this->logger()->debug("Clearing test directories in '{$this->cypressRoot}'.");
     $this->removeDirectory($this->cypressRoot . '/integration');
     $this->removeDirectory($this->cypressRoot . '/TestSite');
     $this->fileSystem->mkdir($this->cypressRoot . '/integration');
@@ -162,11 +162,11 @@ class CypressCommands extends DrushCommands {
       $this->importTestDirectory($id, $dir, $support, $plugins, $dependencies);
     }
 
+    $this->logger()->info('Assembling Cypress tests from test directories.');
     foreach ($this->testDirs as $id => $dir) {
       $this->importTestDirectory($id, $dir, $support, $plugins, $dependencies);
     }
 
-    $this->logger()->debug('Writing support.js.');
     $this->fileSystem->dumpFile(
       $this->cypressRoot . '/support.js',
       $this->generateSupportIndexJs($support)
@@ -195,7 +195,7 @@ class CypressCommands extends DrushCommands {
 
     $packageJson = json_encode($packageJson, JSON_PRETTY_PRINT);
 
-    $this->logger()->debug('Writing package.js.');
+    $this->logger()->debug("Writing package.json to '{$this->cypressRoot}'.");
     $this->fileSystem->dumpFile(
       $this->cypressRoot . '/package.json',
       $packageJson

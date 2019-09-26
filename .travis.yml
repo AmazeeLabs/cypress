@@ -43,6 +43,6 @@ script:
   - ./vendor/bin/drush serve -q &
   - ./vendor/bin/phpunit -c core/phpunit.xml.dist modules/cypress
   - ./vendor/bin/drush en cypress
-  - ./vendor/bin/drush cypress:init
+  - ./vendor/bin/drush -d cypress:init
   - ls -la $DRUPAL_BUILD_DIR/.cypress/node_modules | grep drupal
   - ./vendor/bin/drush cypress:run
