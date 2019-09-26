@@ -11,11 +11,11 @@ addons:
 
 env:
   global:
-    - DRUPAL_BUILD_DIR=$TRAVIS_BUILD_DIR/../drupal
     - DRUPAL_TEST_DB_URL=sqlite://localhost/sites/default/files/db.sqlite
     - DRUPAL_TEST_BASE_URL=http://localhost:8888
     - TRAVIS=true
-    - DRUPAL_CORE=8.8.x
+    - DRUPAL_VERSION=8.7.7
+    - DRUPAL_BUILD_DIR=$TRAVIS_BUILD_DIR/../drupal-$DRUPAL_VERSION
 # Cache composer downloads.
 cache:
   directories:
@@ -24,27 +24,23 @@ cache:
 before_install:
   # Disable xdebug.
   - phpenv config-rm xdebug.ini
-
   # Composer  setup
   - composer self-update
-  - export PATH="$HOME/.composer/vendor/bin:$PATH"
-  - composer global require drush/drush
-  - composer global require phpunit/phpunit
+  # Download Drupal
+  - curl -O https://ftp.drupal.org/files/projects/drupal-$DRUPAL_VERSION.tar.gz
+  - tar -xvfz drupal-$DRUPAL_VERSION.tar.gz -C $TRAVIS_BUILD_DIR/../
+  - rm $DRUPAL_VERSION.tar.gz
 
 install:
-  # Download Drupal 8 core from the Github mirror because it is faster.
-  - git clone --branch $DRUPAL_CORE --depth 1 https://github.com/drupal/drupal.git $DRUPAL_BUILD_DIR
-
+  - composer --working-dir=$DRUPAL_BUILD_DIR install
+  - composer --working-dir=$DRUPAL_BUILD_DIR drush/drush
   # Reference the module in the build site.
   - ln -s $TRAVIS_BUILD_DIR $DRUPAL_BUILD_DIR/modules/cypress
 
-  - composer --working-dir=$DRUPAL_BUILD_DIR install
-
 script:
   - cd $DRUPAL_BUILD_DIR
-#  - phpunit --bootstrap=core/tests/bootstrap.php modules/cypress
-  - drush si minimal -y --db-url=$DRUPAL_TEST_DB_URL
-  - drush en cypress
-  - drush cypress:init
-  - cat .cypress/package.json
-  - drush -d cypress:run
+  - ./vendor/bin/drush serve &
+  - php core/script/drupal install minimal
+  - ./vendor/bin/phpunit -c
+  - ./vendor/bin/drush en cypress
+  - ./vendor/bin/drush cypress:run
