@@ -26,6 +26,7 @@ before_install:
   - phpenv config-rm xdebug.ini
   # Composer  setup
   - composer self-update
+  - npm update -q
   # Download Drupal
   - curl -O https://ftp.drupal.org/files/projects/drupal-$DRUPAL_VERSION.tar.gz
   - tar -xf drupal-$DRUPAL_VERSION.tar.gz -C $TRAVIS_BUILD_DIR/../
