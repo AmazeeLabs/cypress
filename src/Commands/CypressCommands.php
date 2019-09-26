@@ -209,6 +209,7 @@ class CypressCommands extends DrushCommands {
       if ($this->fileSystem->exists($this->cypressRoot . '/package-lock.json')) {
         $this->fileSystem->remove($this->cypressRoot . '/package-lock.json');
       }
+      $this->logger()->debug(file_get_contents($this->cypressRoot . '/package.json'));
       $this->npmInstall->mustRun();
     }
   }
