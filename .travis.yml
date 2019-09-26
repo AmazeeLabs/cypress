@@ -33,13 +33,14 @@ before_install:
 install:
   - composer --working-dir=$DRUPAL_BUILD_DIR install
   - composer --working-dir=$DRUPAL_BUILD_DIR require drush/drush
+  - composer --working-dir=$DRUPAL_BUILD_DIR run-script drupal-phpunit-upgrade
   # Reference the module in the build site.
   - ln -s $TRAVIS_BUILD_DIR $DRUPAL_BUILD_DIR/modules/cypress
 
 script:
   - cd $DRUPAL_BUILD_DIR
-  - ./vendor/bin/drush serve &
   - php core/scripts/drupal install minimal
+  - ./vendor/bin/drush serve &
   - ./vendor/bin/phpunit -c core/phpunit.xml.dist modules/cypress
   - ./vendor/bin/drush en cypress
   - ./vendor/bin/drush cypress:run
