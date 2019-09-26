@@ -39,7 +39,7 @@ install:
 script:
   - cd $DRUPAL_BUILD_DIR
   - ./vendor/bin/drush serve &
-  - php core/script/drupal install minimal
+  - php core/scripts/drupal install minimal
   - ./vendor/bin/phpunit -c core/phpunit.xml.dist modules/cypress
   - ./vendor/bin/drush en cypress
   - ./vendor/bin/drush cypress:run
