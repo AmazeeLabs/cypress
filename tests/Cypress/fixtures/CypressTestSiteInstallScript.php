@@ -12,9 +12,5 @@ class CypressTestSiteInstallScript implements TestSetupInterface {
     /** @var \Drupal\Core\Extension\ModuleInstallerInterface $moduleInstaller */
     $moduleInstaller = \Drupal::service('module_installer');
     $moduleInstaller->install(['cypress']);
-
-    /** @var \Drupal\Core\Routing\RouteBuilderInterface $routeBuilder */
-    $routeBuilder = \Drupal::service('router.builder');
-    $routeBuilder->rebuild();
   }
 }

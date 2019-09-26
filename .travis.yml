@@ -1,0 +1,52 @@
+language: php
+sudo: false
+dist: bionic
+
+php:
+  - 7.2
+node:
+  - 11
+
+addons:
+  apt:
+    packages:
+      - libgconf-2-4
+
+env:
+  global:
+    - DRUPAL_TEST_DB_URL=sqlite://localhost/sites/default/files/db.sqlite
+    - DRUPAL_TEST_BASE_URL=http://localhost:8888
+    - TRAVIS=true
+    - DRUPAL_VERSION=8.7.7
+    - DRUPAL_BUILD_DIR=$TRAVIS_BUILD_DIR/../drupal-$DRUPAL_VERSION
+# Cache composer downloads.
+cache:
+  directories:
+    - $HOME/.composer
+
+before_install:
+  # Disable xdebug.
+  - phpenv config-rm xdebug.ini
+  # Composer  setup
+  - composer self-update
+  - npm update -q
+  # Download Drupal
+  - curl -O https://ftp.drupal.org/files/projects/drupal-$DRUPAL_VERSION.tar.gz
+  - tar -xf drupal-$DRUPAL_VERSION.tar.gz -C $TRAVIS_BUILD_DIR/../
+
+install:
+  - composer --working-dir=$DRUPAL_BUILD_DIR install
+  - composer --working-dir=$DRUPAL_BUILD_DIR require drush/drush
+  - composer --working-dir=$DRUPAL_BUILD_DIR run-script drupal-phpunit-upgrade
+  # Reference the module in the build site.
+  - ln -s $TRAVIS_BUILD_DIR $DRUPAL_BUILD_DIR/modules/cypress
+
+script:
+  - cd $DRUPAL_BUILD_DIR
+  - php core/scripts/drupal install -q minimal
+  - ./vendor/bin/drush serve -q &
+  - ./vendor/bin/phpunit -c core/phpunit.xml.dist modules/cypress
+  - ./vendor/bin/drush en cypress
+  - ./vendor/bin/drush -d cypress:init
+  - cd .cypress && npm install --loglevel verbose && cd ..
+  - ./vendor/bin/drush cypress:run
