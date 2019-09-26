@@ -47,5 +47,5 @@ script:
   - ./vendor/bin/phpunit -c core/phpunit.xml.dist modules/cypress
   - ./vendor/bin/drush en cypress
   - ./vendor/bin/drush -d cypress:init
-  - npm install --loglevel verbose
+  - cd .cypress && npm install --loglevel verbose && cd ..
   - ./vendor/bin/drush cypress:run
