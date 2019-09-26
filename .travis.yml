@@ -29,7 +29,6 @@ before_install:
   # Download Drupal
   - curl -O https://ftp.drupal.org/files/projects/drupal-$DRUPAL_VERSION.tar.gz
   - tar -xvf drupal-$DRUPAL_VERSION.tar.gz -C $TRAVIS_BUILD_DIR/../
-  - rm $DRUPAL_VERSION.tar.gz
 
 install:
   - composer --working-dir=$DRUPAL_BUILD_DIR install
