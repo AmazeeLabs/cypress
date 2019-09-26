@@ -4,9 +4,11 @@ dist: bionic
 
 php:
   - 7.2
+# Use a recent version of npm. Local dependencies don't work Travis default.
 node:
   - 11
 
+# Cypress requires libgconf-2-4
 addons:
   apt:
     packages:
@@ -19,6 +21,7 @@ env:
     - TRAVIS=true
     - DRUPAL_VERSION=8.7.7
     - DRUPAL_BUILD_DIR=$TRAVIS_BUILD_DIR/../drupal-$DRUPAL_VERSION
+
 # Cache composer downloads.
 cache:
   directories:
@@ -29,24 +32,29 @@ before_install:
   - phpenv config-rm xdebug.ini
   # Composer  setup
   - composer self-update
-  - npm update -q
-  # Download Drupal
+  # Download and unpack Drupal
   - curl -O https://ftp.drupal.org/files/projects/drupal-$DRUPAL_VERSION.tar.gz
   - tar -xf drupal-$DRUPAL_VERSION.tar.gz -C $TRAVIS_BUILD_DIR/../
 
 install:
+  # Install Drupal development dependencies.
   - composer --working-dir=$DRUPAL_BUILD_DIR install
+  # Install Drush
   - composer --working-dir=$DRUPAL_BUILD_DIR require drush/drush
+  # Upgrade phpunit to work with PHP 7
   - composer --working-dir=$DRUPAL_BUILD_DIR run-script drupal-phpunit-upgrade
   # Reference the module in the build site.
   - ln -s $TRAVIS_BUILD_DIR $DRUPAL_BUILD_DIR/modules/cypress
 
 script:
   - cd $DRUPAL_BUILD_DIR
+  # Do a minimal Drupal installation. Required for drush.
   - php core/scripts/drupal install -q minimal
+  # Run a simple http server on port 8888
   - ./vendor/bin/drush serve -q &
+  # Run Drupal Unit tests in this module.
   - ./vendor/bin/phpunit -c core/phpunit.xml.dist modules/cypress
+  # Enable the cypress module
   - ./vendor/bin/drush en cypress
-  - ./vendor/bin/drush -d cypress:init
-  - cd .cypress && npm install --loglevel verbose && cd ..
+  # Run all Cypress tests
   - ./vendor/bin/drush cypress:run
