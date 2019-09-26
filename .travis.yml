@@ -32,7 +32,7 @@ before_install:
 
 install:
   - composer --working-dir=$DRUPAL_BUILD_DIR install
-  - composer --working-dir=$DRUPAL_BUILD_DIR drush/drush
+  - composer --working-dir=$DRUPAL_BUILD_DIR require drush/drush
   # Reference the module in the build site.
   - ln -s $TRAVIS_BUILD_DIR $DRUPAL_BUILD_DIR/modules/cypress
 
