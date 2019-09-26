@@ -266,7 +266,7 @@ class CypressCommands extends DrushCommands {
    * @param $dependencies
    */
   protected function importTestDirectory($id, $path, &$support, &$plugins, &$dependencies) {
-    $path = realpath($this->appRoot . '/' . $path);
+    $path = $this->appRoot . '/' . $path;
     if (!$this->fileSystem->exists($path)) {
       return;
     }
