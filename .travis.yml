@@ -44,7 +44,5 @@ script:
   - ./vendor/bin/phpunit -c core/phpunit.xml.dist modules/cypress
   - ./vendor/bin/drush en cypress
   - ./vendor/bin/drush -d cypress:init
-  - pdw
-  - ls -la
-  - cat .cypress/package.json
+  - ls -la .cypress
   - ./vendor/bin/drush cypress:run
