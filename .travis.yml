@@ -58,4 +58,4 @@ script:
   # Enable the cypress module
   - ./vendor/bin/drush en cypress
   # Run all Cypress tests
-  - ./vendor/bin/drush cypress:run
+  - ./vendor/bin/drush -d cypress:run
