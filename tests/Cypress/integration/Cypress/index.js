@@ -1,8 +1,6 @@
 // @ts-check
 /// <reference types="Cypress" />
 
-import {Then} from "cypress-cucumber-preprocessor/steps";
-
 beforeEach(() => {
   cy.drupalInstall('cypress/CypressTestSiteInstallScript.php');
 });

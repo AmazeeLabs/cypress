@@ -51,15 +51,16 @@ const dbUrl = function() {
   return Cypress.env('DRUPAL_TEST_DB_URL') || 'sqlite://localhost/sites/default/files/test.sqlite';
 };
 
-/**
- * Execute a drush command.
- */
 Cypress.Commands.add('drush', command => {
-  const sitePath = Cypress.env('DRUPAL_SITE_PATH');
-  return cy.exec(sitePath
-    ? `drush --uri=${baseUrl()} ${command}`
-    : `cd ${sitePath} && drush --uri=${baseUrl()} ${command}`
-  );
+  if (Cypress.env('DRUPAL_SITE_PATH')) {
+    throw 'Can\'t use drush on a test site installed with `drupalInstall`.';
+  }
+  return cy.exec(`drush --uri=${baseUrl()} ${command}`);
+});
+
+Cypress.Commands.add('drushScript', (script, args) => {
+  const argString= args.map(arg => `"${arg.replace('"', '\"')}"`).join(' ');
+  cy.drush(`scr .cypress/integration/${script} ${argString}`);
 });
 
 Cypress.Commands.add('drupalInstall', setupFile => {

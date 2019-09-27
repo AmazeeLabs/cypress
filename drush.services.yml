@@ -27,28 +27,10 @@ services:
     arguments:
       - '@app.root'
       - '@cypress.root'
-      - '@cypress.process.npm_install'
-      - '@cypress.process.open'
-      - '@cypress.process.run'
       - '@module_handler'
       - '@cypress.filesystem'
       - '%cypress.additional.folders%'
+      - '%cypress.executable.npm%'
+      - '%cypress.executable.node%'
     tags:
       - { name: drush.command }
-
-  cypress.process.npm_install:
-    class: Symfony\Component\Process\Process
-    arguments:
-      - ['%cypress.executable.npm%', 'install']
-      - '@cypress.root'
-
-  cypress.process.open:
-    class: Symfony\Component\Process\Process
-    arguments:
-      - ['%cypress.executable.node%', './node_modules/.bin/cypress', 'open']
-      - '@cypress.root'
-  cypress.process.run:
-    class: Symfony\Component\Process\Process
-    arguments:
-      - ['%cypress.executable.node%', './node_modules/.bin/cypress', 'run']
-      - '@cypress.root'

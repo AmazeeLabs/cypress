@@ -45,7 +45,28 @@ declare namespace Cypress {
      * @param command
      *   The drush command without `drush`.
      */
-    drush(command?: String): Chainable<Subject>
+    drush(command?: string): Chainable<Subject>
+
+    /**
+     * Execute a drush script with arguments.
+     *
+     * Automatically aliases module paths. Given there is a module "my_module"
+     *  with a script file in:
+     *
+     * `tests/Cypress/integration/Cypress/testPage.php`
+     *
+     * ... then `drushScript` can be called like this:
+     *
+     * `cy.drupalSetup('my_module/testPage.php', ['Test title'])`
+     *
+     * Scripts in the global 'steps' folder are moved to 'common':
+     *
+     * `cy.drupalSetup('common/my_module/testPage.php', ['Test title'])`
+     *
+     * @param script
+     * @param arguments
+     */
+    drushScript(script: string, arguments?: string[]): Chainable<Subject>
 
     /**
      * Initiate a Drupal session.
