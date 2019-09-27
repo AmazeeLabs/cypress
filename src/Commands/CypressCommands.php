@@ -133,6 +133,7 @@ class CypressCommands extends DrushCommands {
     $this->fileSystem->dumpFile($this->appRoot . '/package.json', json_encode($packageJson, JSON_PRETTY_PRINT));
 
     $foundCypress = FALSE;
+    $result = NULL;
     try {
       $result = $this->npm(['view', 'cypress', 'version'], FALSE);
       $foundCypress = trim($result) === static::$CYPRESS_VERSION;
@@ -140,6 +141,9 @@ class CypressCommands extends DrushCommands {
     if (!$foundCypress) {
       $this->logger()->debug('Installing cypress.');
       $this->runProcess([$this->npmExecutable, 'install', 'cypress@'.static::$CYPRESS_VERSION], $this->appRoot);
+    }
+    else {
+      $this->logger()->debug('Found cypress version: ' . trim($result));
     }
 
     $foundCypressCucumber = FALSE;
@@ -150,6 +154,9 @@ class CypressCommands extends DrushCommands {
     if (!$foundCypressCucumber) {
       $this->logger()->debug('Installing cypress-cucumber-preprocessor.');
       $this->runProcess([$this->npmExecutable, 'install', 'cypress-cucumber-preprocessor@'.static::$CYPRESS_CUCUMBER_VERSION], $this->appRoot);
+    }
+    else {
+      $this->logger()->debug('Found cypress-cucumber-preprocess version: ' . trim($result));
     }
 
     $this->logger()->debug("Writing cypress.json to '{$this->cypressRoot}'.");
