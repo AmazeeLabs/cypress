@@ -74,9 +74,11 @@ class CypressCommands extends DrushCommands {
     $this->nodeExecutable = $nodeExecutable;
   }
 
-  function runProcess(array $command, $cwd) {
-    $process = $this->processManager()->process($command, $cwd);
-    $process->setTty(Tty::isTtySupported());
+  function runProcess(array $command, $cwd, $tty = TRUE) {
+    $process = new Process($command, $cwd);
+    if ($tty) {
+      $process->setTty(Tty::isTtySupported());
+    }
     $process->mustRun();
     return $process->getOutput();
   }
@@ -99,9 +101,9 @@ class CypressCommands extends DrushCommands {
     $this->cypress(['run']);
   }
 
-  protected function npm(array $args) {
+  protected function npm(array $args, $tty = TRUE) {
     array_unshift($args, $this->npmExecutable);
-    return $this->runProcess($args, $this->appRoot);
+    return $this->runProcess($args, $this->appRoot, $tty);
   }
 
   protected function cypress(array $args) {
@@ -132,7 +134,7 @@ class CypressCommands extends DrushCommands {
 
     $foundCypress = FALSE;
     try {
-      $result = $this->npm(['view', 'cypress', 'version']);
+      $result = $this->npm(['view', 'cypress', 'version'], FALSE);
       $foundCypress = trim($result) === static::$CYPRESS_VERSION;
     } catch (ProcessFailedException $exc) {}
     if (!$foundCypress) {
@@ -142,10 +144,10 @@ class CypressCommands extends DrushCommands {
 
     $foundCypressCucumber = FALSE;
     try {
-      $result = $this->npm(['view', 'cypress-cucumber-preprocessor', 'version']);
+      $result = $this->npm(['view', 'cypress-cucumber-preprocessor', 'version'], FALSE);
       $foundCypressCucumber = trim($result) === static::$CYPRESS_CUCUMBER_VERSION;
     } catch (ProcessFailedException $exc) {}
-    if ($foundCypressCucumber) {
+    if (!$foundCypressCucumber) {
       $this->logger()->debug('Installing cypress-cucumber-preprocessor.');
       $this->runProcess([$this->npmExecutable, 'install', 'cypress-cucumber-preprocessor@'.static::$CYPRESS_CUCUMBER_VERSION], $this->appRoot);
     }

@@ -45,6 +45,7 @@ install:
   - composer --working-dir=$DRUPAL_BUILD_DIR run-script drupal-phpunit-upgrade
   # Reference the module in the build site.
   - ln -s $TRAVIS_BUILD_DIR $DRUPAL_BUILD_DIR/modules/cypress
+  - ln -s $TRAVIS_BUILD_DIR/tests/features $DRUPAL_BUILD_DIR/features
 
 script:
   - cd $DRUPAL_BUILD_DIR
@@ -53,7 +54,7 @@ script:
   # Run a simple http server on port 8888
   - ./vendor/bin/drush serve -q &
   # Run Drupal Unit tests in this module.
-  - ./vendor/bin/phpunit -c core/phpunit.xml.dist modules/cypress
+#  - ./vendor/bin/phpunit -c core/phpunit.xml.dist modules/cypress
   # Enable the cypress module
   - ./vendor/bin/drush en cypress
   # Run all Cypress tests

@@ -4,7 +4,7 @@ parameters:
   # Additional directories to scan for tests.
   # Relative to @app.root.
   cypress.additional.folders:
-    local: 'cypress'
+    features: 'features'
 
 services:
   cypress.filesystem:
