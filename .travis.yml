@@ -21,6 +21,7 @@ env:
     - TRAVIS=true
     - DRUPAL_VERSION=8.7.7
     - DRUPAL_BUILD_DIR=$TRAVIS_BUILD_DIR/../drupal-$DRUPAL_VERSION
+    - PATH=$PATH:$DRUPAL_BUILD_DIR/vendor/bin
 
 # Cache composer downloads.
 cache:
