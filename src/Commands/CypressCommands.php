@@ -84,6 +84,10 @@ class CypressCommands extends DrushCommands {
     $this->nodeExecutable = $nodeExecutable;
   }
 
+  protected function npmRoot() {
+    return trim($this->npm(['-g', 'root'], FALSE));
+  }
+
   /**
    * @command cypress:open
    */
@@ -135,7 +139,7 @@ class CypressCommands extends DrushCommands {
   }
 
   protected function checkNpmPackageVersion($package, $version) {
-    $path = $this->appRoot . '/node_modules/' . $package . '/package.json';
+    $path = $this->npmRoot() . '/node_modules/' . $package . '/package.json';
     if (!$this->fileSystem->exists($path)) {
       return FALSE;
     }
@@ -146,7 +150,7 @@ class CypressCommands extends DrushCommands {
   protected function ensureNpmPackageVersion($package, $version) {
     if (!$this->checkNpmPackageVersion($package, $version)) {
       $this->logger()->notice("Installing package $package version: $version");
-      $this->runProcess([$this->npmExecutable, 'install', "$package@$version"], $this->appRoot);
+      $this->runProcess([$this->npmExecutable, '-g', 'install', "$package@$version"], $this->appRoot);
     }
     else {
       $this->logger()->debug("Package $package version $version already installed.");
