@@ -51,8 +51,18 @@ class CypressCommands extends DrushCommands {
    */
   protected $testDirs;
 
+  /**
+   * The npm executable path.
+   *
+   * @var string
+   */
   protected $npmExecutable;
 
+  /**
+   * The node executable path.
+   *
+   * @var string
+   */
   protected $nodeExecutable;
 
   public function __construct(
@@ -74,15 +84,6 @@ class CypressCommands extends DrushCommands {
     $this->nodeExecutable = $nodeExecutable;
   }
 
-  function runProcess(array $command, $cwd, $tty = TRUE) {
-    $process = new Process($command, $cwd);
-    if ($tty) {
-      $process->setTty(Tty::isTtySupported());
-    }
-    $process->mustRun();
-    return $process->getOutput();
-  }
-
   /**
    * @command cypress:open
    */
@@ -101,6 +102,28 @@ class CypressCommands extends DrushCommands {
     $this->cypress(['run']);
   }
 
+  /**
+   * Run a command line process.
+   *
+   * @param array $command
+   *   The command line array.
+   * @param $cwd
+   *   The working directory.
+   * @param bool $tty
+   *   Boolean if output should be piped.
+   *
+   * @return string
+   *   The command output.
+   */
+  function runProcess(array $command, $cwd, $tty = TRUE) {
+    $process = $this->processManager()->process($command, $cwd);
+    if ($tty) {
+      $process->setTty(Tty::isTtySupported());
+    }
+    $process->mustRun();
+    return $process->getOutput();
+  }
+
   protected function npm(array $args, $tty = TRUE) {
     array_unshift($args, $this->npmExecutable);
     return $this->runProcess($args, $this->appRoot, $tty);
@@ -109,6 +132,25 @@ class CypressCommands extends DrushCommands {
   protected function cypress(array $args) {
     array_unshift($args, $this->nodeExecutable, '../node_modules/.bin/cypress');
     return $this->runProcess($args, $this->cypressRoot);
+  }
+
+  protected function checkNpmPackageVersion($package, $version) {
+    $path = $this->appRoot . '/node_modules/' . $package . '/package.json';
+    if (!$this->fileSystem->exists($path)) {
+      return FALSE;
+    }
+    $packageJson = json_decode(file_get_contents($path));
+    return $packageJson->version === $version;
+  }
+
+  protected function ensureNpmPackageVersion($package, $version) {
+    if (!$this->checkNpmPackageVersion($package, $version)) {
+      $this->logger()->notice("Installing package $package version: $version");
+      $this->runProcess([$this->npmExecutable, 'install', "$package@$version"], $this->appRoot);
+    }
+    else {
+      $this->logger()->debug("Package $package version $version already installed.");
+    }
   }
 
   /**
@@ -123,41 +165,19 @@ class CypressCommands extends DrushCommands {
 
     if (!$this->fileSystem->exists($this->appRoot . '/package.json')) {
       $this->logger()->notice("No package.json found in '{$this->appRoot}'.");
-      $this->logger()->notice("Running 'npm init -y'.");
+      $this->logger()->notice("Initialising npm package.");
       $this->npm(['init', '-y']);
     }
 
-    $this->logger()->notice("Adding cypress-cucumber-preprocessor configuration to {$this->appRoot}/package.json.");
     $packageJson = json_decode(file_get_contents($this->appRoot . '/package.json'), TRUE);
-    $packageJson['cypress-cucumber-preprocessor']['nonGlobalStepDefinitions'] = TRUE;
-    $this->fileSystem->dumpFile($this->appRoot . '/package.json', json_encode($packageJson, JSON_PRETTY_PRINT));
-
-    $foundCypress = FALSE;
-    $result = NULL;
-    try {
-      $result = $this->npm(['view', 'cypress', 'version'], FALSE);
-      $foundCypress = trim($result) === static::$CYPRESS_VERSION;
-    } catch (ProcessFailedException $exc) {}
-    if (!$foundCypress) {
-      $this->logger()->debug('Installing cypress.');
-      $this->runProcess([$this->npmExecutable, 'install', 'cypress@'.static::$CYPRESS_VERSION], $this->appRoot);
-    }
-    else {
-      $this->logger()->debug('Found cypress version: ' . trim($result));
+    if (!array_key_exists('cypress-cucumber-preprocessor', $packageJson)) {
+      $this->logger()->notice("Adding cypress-cucumber-preprocessor configuration to {$this->appRoot}/package.json.");
+      $packageJson['cypress-cucumber-preprocessor']['nonGlobalStepDefinitions'] = TRUE;
+      $this->fileSystem->dumpFile($this->appRoot . '/package.json', json_encode($packageJson, JSON_PRETTY_PRINT));
     }
 
-    $foundCypressCucumber = FALSE;
-    try {
-      $result = $this->npm(['view', 'cypress-cucumber-preprocessor', 'version'], FALSE);
-      $foundCypressCucumber = trim($result) === static::$CYPRESS_CUCUMBER_VERSION;
-    } catch (ProcessFailedException $exc) {}
-    if (!$foundCypressCucumber) {
-      $this->logger()->debug('Installing cypress-cucumber-preprocessor.');
-      $this->runProcess([$this->npmExecutable, 'install', 'cypress-cucumber-preprocessor@'.static::$CYPRESS_CUCUMBER_VERSION], $this->appRoot);
-    }
-    else {
-      $this->logger()->debug('Found cypress-cucumber-preprocess version: ' . trim($result));
-    }
+    $this->ensureNpmPackageVersion('cypress', static::$CYPRESS_VERSION);
+    $this->ensureNpmPackageVersion('cypress-cucumber-preprocessor', static::$CYPRESS_CUCUMBER_VERSION);
 
     $this->logger()->debug("Writing cypress.json to '{$this->cypressRoot}'.");
     $this->fileSystem->dumpFile(
@@ -168,7 +188,7 @@ class CypressCommands extends DrushCommands {
         'pluginsFile' => 'plugins.js',
         'supportFile' => 'support.js',
         'video' => FALSE,
-        // TODO: Make configurable.
+        // TODO: Configurable default host?
         'baseUrl' =>  'http://localhost:8888',
       ], JSON_PRETTY_PRINT)
     );
@@ -185,20 +205,23 @@ class CypressCommands extends DrushCommands {
     $this->logger()->info('Assembling Cypress tests in modules.');
     foreach ($this->moduleHandler->getModuleList() as $id => $module) {
       $dir = $module->getPath() . '/tests/Cypress';
-      $this->importTestDirectory($id, $dir, $support);
+      $this->importTestDirectory($id, $dir);
     }
 
     $this->logger()->info('Assembling Cypress tests from test directories.');
     foreach ($this->testDirs as $id => $dir) {
-      $this->importTestDirectory($id, $dir, $support);
+      if ($this->importTestDirectory($id, $dir)) {
+        $support[] = $this->appRoot . '/' . $dir;
+      }
     }
 
+    $this->logger()->debug("Generating '{$this->cypressRoot}/support.js'.");
     $this->fileSystem->dumpFile(
       $this->cypressRoot . '/support.js',
       $this->generateSupportIndexJs($support)
     );
 
-    $this->logger()->debug('Writing plugins.js.');
+    $this->logger()->debug("Generating '{$this->cypressRoot}/plugins.js'.");
     $this->fileSystem->dumpFile(
       $this->cypressRoot . '/plugins.js',
       $this->generatePluginsIndexJs()
@@ -208,7 +231,7 @@ class CypressCommands extends DrushCommands {
   /**
    * Generate a javascript file that imports `index` from given folders.
    *
-   * @param array $ids
+   * @param array $paths
    *   A list of dependency ids.
    *
    * @return string
@@ -245,21 +268,19 @@ JS;
   /**
    * Import tests from a given extension directory.
    *
-   * @param $id
+   * @param string $id
+   *   The identifier for this test directory (e.g. module name).
    * @param $path
-   * @param $support
-   * @param $plugins
-   * @param $dependencies
+   *   The relative path of this test directory.
+   *
+   * @return boolean
+   *   A boolean flag indicating that the directory contains a support file
+   *   that has to be imported.
    */
-  protected function importTestDirectory($id, $path, &$support) {
+  protected function importTestDirectory($id, $path) {
     $path = $this->appRoot . '/' . $path;
     if (!$this->fileSystem->exists($path)) {
-      return;
-    }
-
-    if ($this->fileSystem->exists($path . '/support/index.js')) {
-      $this->logger()->debug('support/index.js found in ' .  $path . '.');
-      $support[$id] = $path;
+      return FALSE;
     }
 
     if ($this->fileSystem->exists($path . '/integration')) {
@@ -285,6 +306,7 @@ JS;
         $this->cypressRoot . '/fixtures/' . $id
       );
     }
+    return $this->fileSystem->exists($path . '/support/index.js');
   }
 
   /**
