@@ -134,7 +134,8 @@ class CypressCommands extends DrushCommands {
   }
 
   protected function cypress(array $args) {
-    array_unshift($args, $this->nodeExecutable, $this->npmRoot() . '/.bin/cypress');
+//    array_unshift($args, $this->nodeExecutable, $this->npmRoot() . '/.bin/cypress');
+    array_unshift($args, 'npx', 'cypress');
     return $this->runProcess($args, $this->cypressRoot);
   }
 
