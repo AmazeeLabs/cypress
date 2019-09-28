@@ -65,9 +65,10 @@ class CypressCommands extends DrushCommands {
    */
   protected $nodeExecutable;
 
+  protected $npmRoot;
+
   public function __construct(
     $appRoot,
-    $cypressRoot,
     ModuleHandlerInterface $moduleHandler,
     Filesystem $fileSystem,
     array $testDirs,
@@ -77,15 +78,38 @@ class CypressCommands extends DrushCommands {
     parent::__construct();
     $this->fileSystem = $fileSystem;
     $this->appRoot = $appRoot;
-    $this->cypressRoot = $cypressRoot;
     $this->moduleHandler = $moduleHandler;
-    $this->testDirs = $testDirs;
     $this->npmExecutable = $npmExecutable;
     $this->nodeExecutable = $nodeExecutable;
+
+    foreach ($this->moduleHandler->getModuleList() as $id => $module) {
+      $testDirs[$id] = $module->getPath() . '/tests/Cypress';
+    }
+    $testDirs = array_map(function ($path) {
+      return realpath($this->appRoot . '/' . $path);
+    }, $testDirs);
+
+    $this->testDirs = array_filter($testDirs, function ($dir) {
+      return $this->fileSystem->exists($dir);
+    });
+
+    $current = explode('/', $this->appRoot);
+    foreach ($this->testDirs as $path) {
+      $segments = explode('/', $path);
+      $common = [];
+      for ($i = 0; $i < max(count($current), count($segments)); $i++) {
+        if ($current[$i] !== $segments[$i]) {
+          break;
+        }
+        $common[] = $current[$i];
+      }
+      $current = $common;
+    }
+    $this->npmRoot = implode('/', $current);
+    $this->cypressRoot = $this->appRoot . '/.cypress';
   }
 
-  protected function npmRoot() {
-    return trim($this->npm(['-g', 'root'], FALSE));
+  public function list() {
   }
 
   /**
@@ -130,17 +154,16 @@ class CypressCommands extends DrushCommands {
 
   protected function npm(array $args, $tty = TRUE) {
     array_unshift($args, $this->npmExecutable);
-    return $this->runProcess($args, $this->appRoot, $tty);
+    return $this->runProcess($args, $this->npmRoot, $tty);
   }
 
   protected function cypress(array $args) {
-//    array_unshift($args, $this->nodeExecutable, $this->npmRoot() . '/.bin/cypress');
-    array_unshift($args, 'npx', 'cypress');
+    array_unshift($args, $this->npmRoot . '/node_modules/.bin/cypress');
     return $this->runProcess($args, $this->cypressRoot);
   }
 
   protected function checkNpmPackageVersion($package, $version) {
-    $path = $this->npmRoot() . '/node_modules/' . $package . '/package.json';
+    $path = $this->npmRoot . '/node_modules/' . $package . '/package.json';
     if (!$this->fileSystem->exists($path)) {
       return FALSE;
     }
@@ -151,7 +174,7 @@ class CypressCommands extends DrushCommands {
   protected function ensureNpmPackageVersion($package, $version) {
     if (!$this->checkNpmPackageVersion($package, $version)) {
       $this->logger()->notice("Installing package $package version: $version");
-      $this->runProcess([$this->npmExecutable, '-g', 'install', "$package@$version"], $this->appRoot);
+      $this->runProcess([$this->npmExecutable, 'install', "$package@$version"], $this->appRoot);
     }
     else {
       $this->logger()->debug("Package $package version $version already installed.");
@@ -162,23 +185,25 @@ class CypressCommands extends DrushCommands {
    * @command cypress:init
    */
   public function init() {
+    $this->logger()->info('Searching for Cypress tests in modules.');
+
     $this->logger()->notice('Preparing Cypress setup.');
     if (!$this->fileSystem->exists($this->cypressRoot)) {
       $this->logger()->debug("Creating cypress base directory at '{$this->cypressRoot}'.");
       $this->fileSystem->mkdir($this->cypressRoot);
     }
 
-    if (!$this->fileSystem->exists($this->appRoot . '/package.json')) {
-      $this->logger()->notice("No package.json found in '{$this->appRoot}'.");
+    if (!$this->fileSystem->exists($this->npmRoot . '/package.json')) {
+      $this->logger()->notice("No package.json found in '{$this->npmRoot}'.");
       $this->logger()->notice("Initialising npm package.");
       $this->npm(['init', '-y']);
     }
 
-    $packageJson = json_decode(file_get_contents($this->appRoot . '/package.json'), TRUE);
+    $packageJson = json_decode(file_get_contents($this->npmRoot . '/package.json'), TRUE);
     if (!array_key_exists('cypress-cucumber-preprocessor', $packageJson)) {
-      $this->logger()->notice("Adding cypress-cucumber-preprocessor configuration to {$this->appRoot}/package.json.");
+      $this->logger()->notice("Adding cypress-cucumber-preprocessor configuration to {$this->npmRoot}/package.json.");
       $packageJson['cypress-cucumber-preprocessor']['nonGlobalStepDefinitions'] = TRUE;
-      $this->fileSystem->dumpFile($this->appRoot . '/package.json', json_encode($packageJson, JSON_PRETTY_PRINT));
+      $this->fileSystem->dumpFile($this->npmRoot . '/package.json', json_encode($packageJson, JSON_PRETTY_PRINT));
     }
 
     $this->ensureNpmPackageVersion('cypress', static::$CYPRESS_VERSION);
@@ -207,16 +232,10 @@ class CypressCommands extends DrushCommands {
 
     $support = [];
 
-    $this->logger()->info('Assembling Cypress tests in modules.');
-    foreach ($this->moduleHandler->getModuleList() as $id => $module) {
-      $dir = $module->getPath() . '/tests/Cypress';
-      $this->importTestDirectory($id, $dir);
-    }
-
     $this->logger()->info('Assembling Cypress tests from test directories.');
     foreach ($this->testDirs as $id => $dir) {
       if ($this->importTestDirectory($id, $dir)) {
-        $support[] = $this->appRoot . '/' . $dir;
+        $support[] = $dir;
       }
     }
 
@@ -283,7 +302,6 @@ JS;
    *   that has to be imported.
    */
   protected function importTestDirectory($id, $path) {
-    $path = $this->appRoot . '/' . $path;
     if (!$this->fileSystem->exists($path)) {
       return FALSE;
     }
@@ -324,3 +342,4 @@ JS;
   }
 
 }
+

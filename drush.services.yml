@@ -9,24 +9,11 @@ parameters:
 services:
   cypress.filesystem:
     class: Symfony\Component\Filesystem\Filesystem
-  # Expose the cypress directory path as a service.
-  cypress.root.factory:
-    class: Drupal\cypress\CypressRootFactory
-    arguments:
-      - '@app.root'
-    public: false
-
-  cypress.root:
-    class: SplString
-    factory: cypress.root.factory:get
-    tags:
-      - { name: parameter_service }
 
   cypress.commands:
     class: Drupal\cypress\Commands\CypressCommands
     arguments:
       - '@app.root'
-      - '@cypress.root'
       - '@module_handler'
       - '@cypress.filesystem'
       - '%cypress.additional.folders%'
