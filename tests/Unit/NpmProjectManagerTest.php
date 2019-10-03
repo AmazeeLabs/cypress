@@ -7,7 +7,7 @@ use Drupal\cypress\ProcessManagerInterface;
 use Drupal\Tests\UnitTestCase;
 use org\bovigo\vfs\vfsStream;
 
-class NpmPackageManagerTest extends UnitTestCase {
+class NpmProjectManagerTest extends UnitTestCase {
   protected $processManager;
   protected $npmProjectManager;
   protected $fileSystem;
@@ -52,6 +52,22 @@ class NpmPackageManagerTest extends UnitTestCase {
     $this->processManager->run(['npm', 'install'], $this->packageDirectory)->shouldBeCalledOnce();
     $this->npmProjectManager->ensureInitiated();
     $this->assertDirectoryExists($this->packageDirectory);
+  }
+
+  public function testCypressCucumberConfig() {
+    vfsStream::create([
+      'drupal' => [
+        'package.json' => '{}'
+      ],
+    ], $this->fileSystem);
+    $this->processManager->run(['npm', 'init', '-y'], $this->packageDirectory)->shouldNotBeCalled();
+    $this->processManager->run(['npm', 'install'], $this->packageDirectory)->shouldBeCalledOnce();
+    $this->npmProjectManager->ensureInitiated();
+    $this->assertArrayEquals([
+      'cypress-cucumber-preprocessor' => [
+        'nonGlobalStepDefinitions' => TRUE,
+      ],
+    ],  json_decode(file_get_contents($this->packageDirectory . '/package.json'), TRUE));
   }
 
   public function testNodeModulesExists() {

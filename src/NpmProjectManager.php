@@ -70,6 +70,10 @@ class NpmProjectManager implements NpmProjectManagerInterface {
     if (!$this->fileSystem->exists($this->packageDirectory . '/node_modules')) {
       $this->processManager->run([$this->npmExecutable, 'install'], $this->packageDirectory);
     }
+
+    $packageJson = json_decode($this->packageDirectory . '/package.json', TRUE);
+    $packageJson['cypress-cucumber-preprocessor']['nonGlobalStepDefinitions'] = TRUE;
+    $this->fileSystem->dumpFile($this->packageDirectory . '/package.json', json_encode($packageJson, JSON_PRETTY_PRINT));
   }
 
   /**
