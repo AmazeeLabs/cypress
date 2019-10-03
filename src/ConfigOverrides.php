@@ -8,7 +8,7 @@ use Drupal\Core\Config\StorageInterface;
 use Drupal\language\LanguageNegotiationMethodManager;
 
 /**
- * Enforce the GraphQL language negotiation always to be on top.
+ * Enforce the Cypress language negotiation always to be on top.
  */
 class ConfigOverrides implements ConfigFactoryOverrideInterface {
 

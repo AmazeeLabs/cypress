@@ -1,23 +1,9 @@
-parameters:
-  cypress.executable.node: 'node'
-  cypress.executable.npm: 'npm'
-  # Additional directories to scan for tests.
-  # Relative to @app.root.
-  cypress.additional.folders:
-    features: 'features'
-
 services:
-  cypress.filesystem:
-    class: Symfony\Component\Filesystem\Filesystem
-
   cypress.commands:
     class: Drupal\cypress\Commands\CypressCommands
     arguments:
+      - '@cypress'
+      - '@cypress.realpath.test_directories'
       - '@app.root'
-      - '@module_handler'
-      - '@cypress.filesystem'
-      - '%cypress.additional.folders%'
-      - '%cypress.executable.npm%'
-      - '%cypress.executable.node%'
     tags:
       - { name: drush.command }

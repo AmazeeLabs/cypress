@@ -1,4 +1,90 @@
+parameters:
+  # Additional directories to scan for tests.
+  # Relative to @app.root.
+  cypress.test_suites:
+    features: 'features'
+  cypress.version: '^3.4.1'
+  cypress.cucumber_version: '^1.16.0'
+  cypress.executable.node: 'node'
+  cypress.executable.npm: 'npm'
+
 services:
+  # Directory parameters
+  cypress.root.factory:
+    class: Drupal\cypress\CypressRootFactory
+    arguments: ['@app.root']
+    public: false
+  cypress.root:
+    class: SplString
+    factory: cypress.root.factory:getDirectory
+    tags:
+      - { name: parameter_service }
+
+  cypress.test_directories.factory:
+    class: Drupal\cypress\CypressTestDirectoriesFactory
+    arguments:
+      - '@app.root'
+      - '@module_handler'
+      - '%cypress.test_suites%'
+    public: false
+  cypress.test_directories:
+    class: ArrayObject
+    factory: cypress.test_directories.factory:getDirectories
+    tags:
+      - { name: parameter_service }
+
+
+  cypress.realpath.factory:
+    class: Drupal\cypress\RealPathFactory
+    arguments:
+      - '@cypress.test_directories'
+    public: false
+  cypress.realpath.test_directories:
+    class: ArrayObject
+    factory: cypress.realpath.factory:getPaths
+    tags:
+      - { name: parameter_service }
+
+  cypress.npm_root.factory:
+    class: Drupal\cypress\NpmRootFactory
+    arguments:
+      - '@app.root'
+      - '@cypress.realpath.test_directories'
+    public: false
+  cypress.npm_root:
+    class: SplString
+    factory: cypress.npm_root.factory:getDirectory
+    tags:
+      - { name: parameter_service }
+
+  cypress.process_manager:
+    class: Drupal\cypress\TtyProcessManager
+
+  cypress.npm_project_manager:
+    class: Drupal\cypress\NpmProjectManager
+    arguments:
+      - '@cypress.process_manager'
+      - '@cypress.npm_root'
+      - '%cypress.executable.npm%'
+
+  cypress.runtime:
+    class: Drupal\cypress\CypressRuntime
+    arguments:
+      - '@cypress.root'
+
+  cypress:
+    class: Drupal\cypress\Cypress
+    arguments:
+      - '@cypress.process_manager'
+      - '@cypress.npm_project_manager'
+      - '@cypress.runtime'
+      - '@cypress.npm_root'
+      - '@cypress.root'
+      - '@cypress.realpath.test_directories'
+      - '%cypress.version%'
+      - '%cypress.cucumber_version%'
+
+  # Header based sessions
   cypress.event_subsriber:
     class: Drupal\cypress\EventSubscriber
     arguments: ['@session']
