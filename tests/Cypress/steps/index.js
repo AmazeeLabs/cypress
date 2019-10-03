@@ -6,3 +6,4 @@ Given(/^the user "([^"]*)" is logged in$/, function () {
   cy.drupalSession({user: 'admin'});
 });
 
+

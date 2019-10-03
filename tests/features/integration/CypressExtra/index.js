@@ -3,7 +3,7 @@
 
 // And there is a page with title "Test"
 Given(/^there is a page with title "([^"]*)"$/, function (title) {
-  cy.drushScript('features/CypressExtra/testPage.php', [title])
+  cy.drupalScript('features:integration/CypressExtra/testPage.php', {title: title})
 });
 
 // When the user accesses the main content listing

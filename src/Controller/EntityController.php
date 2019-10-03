@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *
  * @package Drupal\cypress\Controller
  */
-class EntityUrlController extends ControllerBase {
+class EntityController extends ControllerBase {
 
   /**
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface

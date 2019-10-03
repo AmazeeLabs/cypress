@@ -58,9 +58,11 @@ Cypress.Commands.add('drush', command => {
   return cy.exec(`drush --uri=${baseUrl()} ${command}`);
 });
 
-Cypress.Commands.add('drushScript', (script, args) => {
-  const argString= args.map(arg => `"${arg.replace('"', '\"')}"`).join(' ');
-  cy.drush(`scr .cypress/integration/${script} ${argString}`);
+Cypress.Commands.add('drupalScript', (script, args) => {
+  cy.request('POST', '/cypress/script', {
+    script,
+    args,
+  });
 });
 
 Cypress.Commands.add('drupalInstall', setupFile => {
@@ -84,7 +86,7 @@ Cypress.Commands.add('drupalUninstall', () => {
 
 });
 
-Cypress.Commands.add('visitDrupalEntity', (type, query, link = 'canonical') => {
+Cypress.Commands.add('drupalVisitEntity', (type, query, link = 'canonical') => {
   const params = Object.keys(query).map(key => `${key}=${encodeURI(query[key])}`).join('&');
   cy.visit(`/cypress/entity/${type}/${link}?${params}`);
 });

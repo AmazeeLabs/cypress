@@ -1,7 +1,7 @@
 Feature: External tests and drush scripts
 
-  Scenario: Automatic login
+  Scenario: Create a test page
     Given the user "admin" is logged in
-    And there is a page with title "Test"
+    And there is a page with title "Foo bar"
     When the user accesses the main content listing
-    Then there should be an entry for the page with title "Test"
+    Then there should be an entry for the page with title "Foo bar"
