@@ -1,4 +1,4 @@
-Feature: External tests and drush scripts
+Feature: External tests and scripts
 
   Scenario: Create a test page
     Given the user "admin" is logged in

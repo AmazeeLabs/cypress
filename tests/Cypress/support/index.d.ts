@@ -1,14 +1,10 @@
 declare namespace Cypress {
-  enum  EnabledState {
-    ON = "on",
-    OFF = "off",
-  }
 
   interface SessionOptions {
     user?: string
     language?: string
     workspace?: string
-    toolbar?: EnabledState
+    toolbar?: boolean
   }
 
   interface SearchProperties {
