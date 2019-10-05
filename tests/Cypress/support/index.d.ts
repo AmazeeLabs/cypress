@@ -1,18 +1,18 @@
 declare namespace Cypress {
-  enum  EnabledState {
-    ON = "on",
-    OFF = "off",
-  }
 
   interface SessionOptions {
     user?: string
     language?: string
     workspace?: string
-    toolbar?: EnabledState
+    toolbar?: boolean
   }
 
   interface SearchProperties {
     [key: string]: string
+  }
+
+  interface EntityProperties {
+    [key: string]: string | EntityProperties
   }
 
   interface Chainable<Subject> {
@@ -45,7 +45,30 @@ declare namespace Cypress {
      * @param command
      *   The drush command without `drush`.
      */
-    drush(command?: String): Chainable<Subject>
+    drush(command?: string): Chainable<Subject>
+
+    /**
+     * Execute a php script with arguments.
+     *
+     * Automatically aliases module paths. Given there is a module "my_module"
+     *  with a script file in:
+     *
+     * `tests/Cypress/integration/Cypress/testPage.php`
+     *
+     * ... then `drupalScript` can be called like this:
+     *
+     * ```
+     * cy.drupalScript('my_module/testPage.php', {'title': 'Test title'})`
+     * ```
+     *
+     * Scripts in the global 'steps' folder are moved to 'common':
+     *
+     * `cy.drupalScript('common/my_module/testPage.php', {'title': 'Test title'})`
+     *
+     * @param script
+     * @param arguments
+     */
+    drupalScript(script: string, arguments?: any): Chainable<Subject>
 
     /**
      * Initiate a Drupal session.
@@ -55,12 +78,37 @@ declare namespace Cypress {
     drupalSession(options: SessionOptions): Chainable<Subject>
 
     /**
-     * Visit an entity link.
      *
      * @param type
      * @param properties
+     * @param session
+     */
+    // drupalCreateEntity(type: string, properties: EntityProperties, session: SessionOptions): Chainable<Subject>
+
+    /**
+     *
+     * @param type
+     * @param search
+     * @param properties
+     * @param session
+     */
+    // drupalEditEntity(type: string, search: SearchProperties, properties: EntityProperties, session: SessionOptions): Chainable<Subject>
+
+    /**
+     *
+     * @param type
+     * @param search
+     * @param session
+     */
+    // drupalDeleteEntity(type: string, search: SearchProperties, session: SessionOptions): Chainable<Subject>
+
+    /**
+     * Visit an entity link.
+     *
+     * @param type
+     * @param search
      * @param link
      */
-    visitDrupalEntity(type: string, properties: SearchProperties, link?: string): Chainable<Subject>
+    drupalVisitEntity(type: string, search: SearchProperties, link?: string): Chainable<Subject>
   }
 }

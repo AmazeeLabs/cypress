@@ -3,12 +3,17 @@
 namespace Drupal\cypress;
 
 /**
- * Parameter factory to define the cypress root directory.
+ * Generate the Cypress root path based on the application root directory.
  */
 class CypressRootFactory {
 
   /**
-   * The application root directory.
+   * The cypress directory path below the application directory.
+   */
+  const CYPRESS_ROOT_DIRECTORY = '.cypress';
+
+  /**
+   * The applications root directory.
    *
    * @var string
    */
@@ -18,19 +23,20 @@ class CypressRootFactory {
    * CypressRootFactory constructor.
    *
    * @param string $appRoot
-   *   The applications root directory.
+   *   The application root directory.
    */
   public function __construct($appRoot) {
     $this->appRoot = $appRoot;
   }
 
   /**
-   * Retrieve the absolute path to the `.cypress` directory.
+   * Retrieve the Cypress root directory.
    *
    * @return string
-   *   The cypress working directory.
+   *   The absolute path to the Cypress root directory.
    */
-  public function get() {
-    return $this->appRoot . '/.cypress';
+  public function getDirectory() {
+    return $this->appRoot . '/' . static::CYPRESS_ROOT_DIRECTORY;
   }
+
 }

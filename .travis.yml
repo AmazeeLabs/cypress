@@ -16,11 +16,14 @@ addons:
 
 env:
   global:
+    - DRUPAL_CYPRESS=on
     - DRUPAL_TEST_DB_URL=sqlite://localhost/sites/default/files/db.sqlite
+    - SIMPLETEST_DB=sqlite://localhost/sites/default/files/db.sqlite
     - DRUPAL_TEST_BASE_URL=http://localhost:8888
     - TRAVIS=true
-    - DRUPAL_VERSION=8.7.7
+    - DRUPAL_VERSION=8.7.8
     - DRUPAL_BUILD_DIR=$TRAVIS_BUILD_DIR/../drupal-$DRUPAL_VERSION
+    - PATH=$PATH:$DRUPAL_BUILD_DIR/vendor/bin
 
 # Cache composer downloads.
 cache:
@@ -45,6 +48,7 @@ install:
   - composer --working-dir=$DRUPAL_BUILD_DIR run-script drupal-phpunit-upgrade
   # Reference the module in the build site.
   - ln -s $TRAVIS_BUILD_DIR $DRUPAL_BUILD_DIR/modules/cypress
+  - ln -s $TRAVIS_BUILD_DIR/tests/features $DRUPAL_BUILD_DIR/features
 
 script:
   - cd $DRUPAL_BUILD_DIR
@@ -57,4 +61,4 @@ script:
   # Enable the cypress module
   - ./vendor/bin/drush en cypress
   # Run all Cypress tests
-  - ./vendor/bin/drush cypress:run
+  - ./vendor/bin/drush -d cypress:run

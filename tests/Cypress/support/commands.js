@@ -51,20 +51,26 @@ const dbUrl = function() {
   return Cypress.env('DRUPAL_TEST_DB_URL') || 'sqlite://localhost/sites/default/files/test.sqlite';
 };
 
-/**
- * Execute a drush command.
- */
 Cypress.Commands.add('drush', command => {
-  const sitePath = Cypress.env('DRUPAL_SITE_PATH');
-  return cy.exec(sitePath
-    ? `drush --uri=${baseUrl()} ${command}`
-    : `cd ${sitePath} && drush --uri=${baseUrl()} ${command}`
-  );
+  if (Cypress.env('DRUPAL_SITE_PATH')) {
+    throw 'Can\'t use drush on a test site installed with `drupalInstall`.';
+  }
+  return cy.exec(`drush --uri=${baseUrl()} ${command}`);
+});
+
+Cypress.Commands.add('drupalScript', (script, args) => {
+  cy.request('POST', '/cypress/script', {
+    script,
+    args,
+  });
 });
 
 Cypress.Commands.add('drupalInstall', setupFile => {
   setupFile = setupFile ? `--setup-file ".cypress/fixtures/${setupFile}"` : '';
-  cy.exec(`php ../core/scripts/test-site.php install ${setupFile} --base-url ${baseUrl()} --db-url ${dbUrl()} --json`, {
+  cy.exec(`php ${Cypress.env('CYPRESS_MODULE_PATH')}/scripts/test-site.php install ${setupFile} --base-url ${baseUrl()} --db-url ${dbUrl()} --json`, {
+    env: {
+      'DRUPAL_APP_ROOT': Cypress.env('DRUPAL_APP_ROOT')
+    },
     timeout: 3000000
   }).then(result => {
     const installData = JSON.parse(result.stdout);
@@ -83,7 +89,7 @@ Cypress.Commands.add('drupalUninstall', () => {
 
 });
 
-Cypress.Commands.add('visitDrupalEntity', (type, query, link = 'canonical') => {
+Cypress.Commands.add('drupalVisitEntity', (type, query, link = 'canonical') => {
   const params = Object.keys(query).map(key => `${key}=${encodeURI(query[key])}`).join('&');
   cy.visit(`/cypress/entity/${type}/${link}?${params}`);
 });

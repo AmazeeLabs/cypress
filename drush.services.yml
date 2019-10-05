@@ -1,54 +1,9 @@
-parameters:
-  cypress.executable.node: 'node'
-  cypress.executable.npm: 'npm'
-  # Additional directories to scan for tests.
-  # Relative to @app.root.
-  cypress.additional.folders:
-    local: 'cypress'
-
 services:
-  cypress.filesystem:
-    class: Symfony\Component\Filesystem\Filesystem
-  # Expose the cypress directory path as a service.
-  cypress.root.factory:
-    class: Drupal\cypress\CypressRootFactory
-    arguments:
-      - '@app.root'
-    public: false
-
-  cypress.root:
-    class: SplString
-    factory: cypress.root.factory:get
-    tags:
-      - { name: parameter_service }
-
   cypress.commands:
     class: Drupal\cypress\Commands\CypressCommands
     arguments:
+      - '@cypress'
+      - '@cypress.realpath.test_directories'
       - '@app.root'
-      - '@cypress.root'
-      - '@cypress.process.npm_install'
-      - '@cypress.process.open'
-      - '@cypress.process.run'
-      - '@module_handler'
-      - '@cypress.filesystem'
-      - '%cypress.additional.folders%'
     tags:
       - { name: drush.command }
-
-  cypress.process.npm_install:
-    class: Symfony\Component\Process\Process
-    arguments:
-      - ['%cypress.executable.npm%', 'install']
-      - '@cypress.root'
-
-  cypress.process.open:
-    class: Symfony\Component\Process\Process
-    arguments:
-      - ['%cypress.executable.node%', './node_modules/.bin/cypress', 'open']
-      - '@cypress.root'
-  cypress.process.run:
-    class: Symfony\Component\Process\Process
-    arguments:
-      - ['%cypress.executable.node%', './node_modules/.bin/cypress', 'run']
-      - '@cypress.root'
