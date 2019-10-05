@@ -31,14 +31,16 @@ class CypressOptionsTest extends UnitTestCase {
       'spec' => 'foo',
       'tags' => '@bar',
     ];
+    $cypressOptions = new CypressOptions($overrides);
     $this->assertJsonStringEqualsJsonString(json_encode(array_merge(
       CypressOptions::DEFAULT,
       [
         'baseUrl' => 'http://localhost:8889',
         'trashAssetsBeforeRuns' => TRUE,
+        'env' => $cypressOptions->getEnvironment(),
       ],
       CypressOptions::FIXED
-    ), JSON_PRETTY_PRINT), (new CypressOptions($overrides))->getCypressJson());
+    ), JSON_PRETTY_PRINT), $cypressOptions->getCypressJson());
   }
 
   public function testCliOptions() {
@@ -48,8 +50,11 @@ class CypressOptionsTest extends UnitTestCase {
   }
 
   public function testEnvironment() {
-    $this->assertEquals(['CYPRESS_TAGS' => '@bar'],  (new CypressOptions([
-      'tags' => '@bar'
+    $this->assertEquals([
+      'CYPRESS_TAGS' => '@bar',
+      'CYPRESS_MODULE_PATH' => realpath(__DIR__ . '/../..'),
+    ],  (new CypressOptions([
+      'tags' => '@bar',
     ]))->getEnvironment());
   }
 }

@@ -29,6 +29,13 @@ class Cypress implements CypressInterface {
   protected $cypressRuntime;
 
   /**
+   * The drupal app root.
+   *
+   * @var string
+   */
+  protected $appRoot;
+
+  /**
    * The cypress configuration directory.
    *
    * @var string
@@ -72,6 +79,8 @@ class Cypress implements CypressInterface {
    *   An npm project manager to install cypress and dependencies.
    * @param \Drupal\cypress\CypressRuntimeInterface $cypressRuntime
    *   The cypress runtime manager to add and execute test suites.
+   * @param $appRoot
+   *   The Drupal app root directory.
    * @param $npmRoot
    *   The npm package directory where dependencies are installed.
    * @param $cypressRoot
@@ -87,6 +96,7 @@ class Cypress implements CypressInterface {
     ProcessManagerInterface $processManager,
     NpmProjectManagerInterface $npmProjectManager,
     CypressRuntimeInterface $cypressRuntime,
+    $appRoot,
     $npmRoot,
     $cypressRoot,
     array $testDirectories,
@@ -96,6 +106,7 @@ class Cypress implements CypressInterface {
     $this->processManager = $processManager;
     $this->npmProjectManager = $npmProjectManager;
     $this->cypressRuntime = $cypressRuntime;
+    $this->appRoot = $appRoot;
     $this->cypressRoot = $cypressRoot;
     $this->testDirectories = $testDirectories;
     $this->cypressVersion = $cypressVersion;
@@ -122,7 +133,9 @@ class Cypress implements CypressInterface {
       $this->cypressCucumberVersion
     );
 
-    $cypressOptions = new CypressOptions($options);
+    $cypressOptions = new CypressOptions($options + [
+      'appRoot' => $this->appRoot
+    ]);
     $this->cypressRuntime->initiate($cypressOptions);
     foreach ($this->testDirectories as $name => $path) {
       $this->cypressRuntime->addSuite($name, $path);
@@ -138,7 +151,7 @@ class Cypress implements CypressInterface {
     $args = $cypressOptions->getCliOptions();
     array_unshift($args, $this->cypressExecutable);
     $args[] = 'run';
-    $this->processManager->run($args, $this->cypressRoot, $cypressOptions->getEnvironment());
+    $this->processManager->run($args, $this->cypressRoot);
   }
 
   /**
@@ -149,6 +162,6 @@ class Cypress implements CypressInterface {
     $args = $cypressOptions->getCliOptions();
     array_unshift($args, $this->cypressExecutable);
     $args[] = 'open';
-    $this->processManager->run($args, $this->cypressRoot, $cypressOptions->getEnvironment());
+    $this->processManager->run($args, $this->cypressRoot);
   }
 }

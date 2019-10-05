@@ -28,6 +28,8 @@ class CypressOptions {
 
   const ENVIRONMENT = [
     'tags' => 'CYPRESS_TAGS',
+    'modulePath' => 'CYPRESS_MODULE_PATH',
+    'appRoot' => 'DRUPAL_APP_ROOT',
   ];
 
   const CLI = [
@@ -51,6 +53,7 @@ class CypressOptions {
     $this->options = array_merge(
       static::DEFAULT,
       $options,
+      ['modulePath' => realpath(__DIR__ . '/..')],
       self::FIXED
     );
   }
@@ -79,7 +82,9 @@ class CypressOptions {
         array_key_exists($key, static::CLI)
         || array_key_exists($key, static::ENVIRONMENT)
       );
-    })), 'array_merge', []), JSON_PRETTY_PRINT);
+    })), 'array_merge', [
+      'env' => $this->getEnvironment(),
+    ]), JSON_PRETTY_PRINT);
   }
 
   /**

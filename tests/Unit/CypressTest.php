@@ -25,6 +25,7 @@ class CypressTest extends UnitTestCase {
       $npmProjectManager->reveal(),
       $cypressRuntime->reveal(),
       '/app',
+      '/app',
       '/app/.cypress',
       [
         'a' => '/app/tests/a',
@@ -37,6 +38,7 @@ class CypressTest extends UnitTestCase {
     $this->options = [
       'tags' => 'foo',
       'spec' => 'bar',
+      'appRoot' => '/app',
     ];
 
     $cypressOptions = new CypressOptions($this->options);
@@ -53,8 +55,7 @@ class CypressTest extends UnitTestCase {
   public function testCypressRun() {
     $this->processManager->run(
       ['/app/node_modules/.bin/cypress', '--spec', 'bar','run'],
-      '/app/.cypress',
-      ['CYPRESS_TAGS' => 'foo']
+      '/app/.cypress'
     )->shouldBeCalledOnce();
     $this->cypress->run($this->options);
   }
@@ -62,8 +63,7 @@ class CypressTest extends UnitTestCase {
   public function testCypressOpen() {
     $this->processManager->run(
       ['/app/node_modules/.bin/cypress', '--spec', 'bar','open'],
-      '/app/.cypress',
-      ['CYPRESS_TAGS' => 'foo']
+      '/app/.cypress'
     )->shouldBeCalledOnce();
     $this->cypress->open($this->options);
   }

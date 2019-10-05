@@ -4,10 +4,20 @@ namespace Drupal\cypress\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * Execute arbitrary PHP scripts from cypress.
+ */
 class ScriptController extends ControllerBase {
 
+  /**
+   * Execute arbitrary PHP scripts from cypress.
+   */
   public function execute() {
+    if (!cypress_enabled()) {
+      throw new NotFoundHttpException();
+    }
     $content = json_decode(\Drupal::request()->getContent());
     if (!$content || !$content->script) {
        new Response('Request body has to be JSON and has to contain at least the "script" key.', 400);

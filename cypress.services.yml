@@ -78,6 +78,7 @@ services:
       - '@cypress.process_manager'
       - '@cypress.npm_project_manager'
       - '@cypress.runtime'
+      - '@app.root'
       - '@cypress.npm_root'
       - '@cypress.root'
       - '@cypress.realpath.test_directories'
