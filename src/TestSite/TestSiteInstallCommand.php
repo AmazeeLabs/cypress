@@ -2,6 +2,7 @@
 
 namespace Drupal\cypress\TestSite;
 
+use Alchemy\Zippy\Zippy;
 use Drupal\cypress\CypressRootFactory;
 use Drupal\TestSite\Commands\TestSiteInstallCommand as CoreTestSiteInstallCommand;
 use Symfony\Component\Filesystem\Filesystem;
@@ -50,10 +51,17 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
     if (!$setup_class) {
       $setup_class = '\Drupal\cypress\TestSite\CypressTestSetup';
     }
+
+    $installCache = getenv('DRUPAL_INSTALL_CACHE')
+      ? $this->appRoot . '/' . getenv('DRUPAL_INSTALL_CACHE')
+      : FALSE;
+
     $this->profile = $profile;
     $this->langcode = $langcode;
     $this->setupBaseUrl();
     $this->prepareEnvironment();
+
+    $lockId = substr($this->databasePrefix, 4);
 
     /** @var \Drupal\TestSite\TestSetupInterface $setupScript */
     $setupScript = new $setup_class();
@@ -72,6 +80,19 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
       'cache',
       $cid,
     ]);
+
+    $zippy = Zippy::load();
+
+    if (
+      $installCache
+      && !$this->fileSystem->exists($cacheDir)
+      && $this->fileSystem->exists($installCache)
+    ) {
+      $this->fileSystem->mkdir($cacheDir);
+      $cache = $zippy->open($installCache);
+      $cache->extract($cacheDir);
+    }
+
     $siteDir = $this->appRoot . '/' . $this->siteDirectory;
 
     $dbFile = $this->appRoot . $dbUrl['path'] . '-' . $this->databasePrefix;
@@ -87,10 +108,22 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
       // When writing to cache, replace the database prefix with a pattern that
       // we can find on cache restore.
       $this->fileSystem->dumpFile($cacheDir . '/settings.php', str_replace(
-        $this->databasePrefix,
-        'DB_PREFIX',
+        $lockId,
+        'LOCK_ID',
         file_get_contents($cacheDir . '/settings.php')
       ));
+
+      if ($installCache) {
+        $files = [];
+        $finder = new Finder();
+        $finder->files()->in($cacheDir);
+        $finder->ignoreDotFiles(FALSE);
+        foreach ($finder as $file) {
+          $files[$file->getRelativePath() . '/' . $file->getBasename()] = $file->getRealPath();
+        }
+
+        $zippy->create($installCache, $files, TRUE);
+      }
     }
     else {
       $this->copyDir($cacheDir, $siteDir);
@@ -102,8 +135,8 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
       // Replace DB_PREFIX in settings php with the db prefix of the current
       // test run.
       $this->fileSystem->dumpFile($siteDir . '/settings.php', str_replace(
-        'DB_PREFIX',
-        $this->databasePrefix,
+        'LOCK_ID',
+        $lockId,
         file_get_contents($cacheDir . '/settings.php')
       ));
 

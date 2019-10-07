@@ -65,11 +65,12 @@ Cypress.Commands.add('drupalScript', (script, args) => {
   });
 });
 
-Cypress.Commands.add('drupalInstall', (profile, setupFile, configDir) => {
+Cypress.Commands.add('drupalInstall', (profile, setupFile, configDir, cache) => {
   setupFile = setupFile ? `--setup-file ".cypress/fixtures/${setupFile}"` : '';
   cy.exec(`php ${Cypress.env('CYPRESS_MODULE_PATH')}/scripts/test-site.php install --install-profile ${profile || 'testing'} ${setupFile} --base-url ${baseUrl()} --db-url ${dbUrl()} --json`, {
     env: {
       'DRUPAL_CONFIG_DIR': configDir,
+      'DRUPAL_INSTALL_CACHE': cache,
       'DRUPAL_APP_ROOT': Cypress.env('DRUPAL_APP_ROOT'),
     },
     timeout: 3000000

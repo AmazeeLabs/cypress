@@ -18,6 +18,7 @@
     },
     "require": {
         "ext-json": "*",
+        "alchemy/zippy": "^0.4.9",
         "drush/drush": "^9.0.0"
     }
 }

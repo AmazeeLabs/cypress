@@ -14,7 +14,7 @@ Given(/^"([^"]*)" contains a new content type "([^"]*)"$/, function () {
 
 // When the test uses 'cy.drupalInstall' to install from "features/config"
 When(/^the test uses 'cy.drupalInstall' to install from "([^"]*)"$/, function (config) {
-  cy.drupalInstall('minimal', null, config);
+  cy.drupalInstall('minimal', null, config, 'features/install-cache.zip');
 });
 
 // And the test accesses the content type listing
