@@ -1,4 +1,4 @@
-Feature: Test session management
+Feature: Session management
   The Drupal module for Cypress allows test cases to control the user session
   without navigating the user interface in every test run. By using the built in
   'cy.drupalSession' command, it is possible to control the authenticated

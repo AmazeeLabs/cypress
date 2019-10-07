@@ -2,7 +2,6 @@
 
 namespace Drupal\cypress\TestSite;
 
-use Drupal\Core\Test\TestDatabase;
 use Drupal\cypress\CypressRootFactory;
 use Drupal\TestSite\Commands\TestSiteInstallCommand as CoreTestSiteInstallCommand;
 use Symfony\Component\Filesystem\Filesystem;
@@ -48,12 +47,25 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
       return parent::setup($profile, $setup_class, $langcode);
     }
 
+    if (!$setup_class) {
+      $setup_class = '\Drupal\cypress\TestSite\CypressTestSetup';
+    }
     $this->profile = $profile;
     $this->langcode = $langcode;
     $this->setupBaseUrl();
     $this->prepareEnvironment();
 
-    $cid = md5(serialize([$profile, $setup_class, $langcode]));
+    /** @var \Drupal\TestSite\TestSetupInterface $setupScript */
+    $setupScript = new $setup_class();
+
+    $cid = md5(serialize([
+      $profile,
+      $setup_class,
+      $langcode,
+      $setupScript instanceof CacheableTestSetupInterface
+        ? $setupScript->getCacheId()
+        : ''
+    ]));
     $cacheDir = implode('/', [
       getenv('DRUPAL_APP_ROOT'),
       CypressRootFactory::CYPRESS_ROOT_DIRECTORY,
@@ -67,7 +79,7 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
     if (!$this->fileSystem->exists($cacheDir)) {
       $this->installDrupal();
       if ($setup_class) {
-        $this->executeSetupClass($setup_class);
+        $setupScript->setup();
       }
       $this->copyDir($siteDir, $cacheDir);
       $this->fileSystem->copy($dbFile, $cacheDir . '/test.sqlite');
@@ -94,6 +106,10 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
         $this->databasePrefix,
         file_get_contents($cacheDir . '/settings.php')
       ));
+
+      if ($setupScript instanceof CacheableTestSetupInterface) {
+        $setupScript->postCacheLoad();
+      }
     }
   }
 

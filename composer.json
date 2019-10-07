@@ -17,6 +17,7 @@
         }
     },
     "require": {
-        "ext-json": "*"
+        "ext-json": "*",
+        "drush/drush": "^9.0.0"
     }
 }
