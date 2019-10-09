@@ -16,3 +16,20 @@ When(/^the test accesses the main content listing$/, function () {
 Then(/^there should be an entry for the page with title "([^"]*)"$/, function (title) {
   cy.contains(title);
 });
+
+// Given the test case has set up a new test site
+Given(/^the test case has set up a new test site$/, function () {
+  // Already done in beforeEach
+});
+
+// When the test case uses 'cy.drush' to execute the 'status' command
+When(/^the test case uses 'cy.drush' to execute the 'status' command$/, function () {
+  cy.drush('status --field=site').then(result => {
+    cy.state('current_site', result.stdout);
+  });
+});
+
+// Then the status test shows the test site as site directory
+Then(/^the status test shows the test site as site directory$/, function () {
+  expect(cy.state('current_site')).to.equal(Cypress.env('DRUPAL_SITE_PATH'));
+});

@@ -39,6 +39,21 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
   /**
    * {@inheritDoc}
    *
+   * Also sets parameters to install from configuration if
+   * DRUPAL_CONFIG_DIR is set.
+   */
+  public function installParameters() {
+    $parameters = parent::installParameters();
+    if ($configDirectory = getenv('DRUPAL_CONFIG_DIR')) {
+      $parameters['parameters']['existing_config'] = TRUE;
+      $parameters['config_install_path'] = $configDirectory;
+    }
+    return $parameters;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
    * Adds setup caching.
    */
   public function setup($profile = 'testing', $setup_class = NULL, $langcode = 'en') {
@@ -70,9 +85,8 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
       $profile,
       $setup_class,
       $langcode,
-      $setupScript instanceof CacheableTestSetupInterface
-        ? $setupScript->getCacheId()
-        : ''
+      getenv('DRUPAL_CONFIG_DIR') ?? '',
+      $installCache,
     ]));
     $cacheDir = implode('/', [
       getenv('DRUPAL_APP_ROOT'),
@@ -98,12 +112,13 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
     $dbFile = $this->appRoot . $dbUrl['path'] . '-' . $this->databasePrefix;
 
     if (!$this->fileSystem->exists($cacheDir)) {
+      $siteDir = $this->appRoot . '/' . $this->siteDirectory;
       $this->installDrupal();
       if ($setup_class) {
         $setupScript->setup();
       }
       $this->copyDir($siteDir, $cacheDir);
-      $this->fileSystem->copy($dbFile, $cacheDir . '/test.sqlite');
+      $this->fileSystem->copy($dbFile, $cacheDir . '/files/' . basename($dbUrl['path']));
 
       // When writing to cache, replace the database prefix with a pattern that
       // we can find on cache restore.
@@ -130,7 +145,7 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
       if ($this->fileSystem->exists($dbFile)) {
         $this->fileSystem->remove($dbFile);
       }
-      $this->fileSystem->copy($cacheDir . '/test.sqlite', $dbFile);
+      $this->fileSystem->copy($cacheDir . '/files/' . basename($dbUrl['path']), $dbFile);
 
       // Replace DB_PREFIX in settings php with the db prefix of the current
       // test run.
@@ -139,10 +154,6 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
         $lockId,
         file_get_contents($cacheDir . '/settings.php')
       ));
-
-      if ($setupScript instanceof CacheableTestSetupInterface) {
-        $setupScript->postCacheLoad();
-      }
     }
   }
 

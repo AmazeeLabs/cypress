@@ -11,7 +11,6 @@ module:
   page_cache: 0
   system: 0
   text: 0
-  update: 0
   user: 0
   minimal: 1000
 theme:

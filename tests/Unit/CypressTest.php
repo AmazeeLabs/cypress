@@ -32,13 +32,15 @@ class CypressTest extends UnitTestCase {
         'b' => '/app/tests/b',
       ],
       '1.0',
-      '1.0'
+      '1.0',
+      'drush'
     );
 
     $this->options = [
       'tags' => 'foo',
       'spec' => 'bar',
       'appRoot' => '/app',
+      'drush' => 'drush',
     ];
 
     $cypressOptions = new CypressOptions($this->options);
