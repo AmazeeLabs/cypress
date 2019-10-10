@@ -129,15 +129,9 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
       ));
 
       if ($installCache) {
-        $files = [];
-        $finder = new Finder();
-        $finder->files()->in($cacheDir);
-        $finder->ignoreDotFiles(FALSE);
-        foreach ($finder as $file) {
-          $files[$file->getRelativePath() . '/' . $file->getBasename()] = $file->getRealPath();
-        }
-
-        $zippy->create($installCache, $files, TRUE);
+        $zippy->create($installCache, [
+          'files' => $this->siteDirectory . '/files',
+        ], TRUE);
       }
     }
     else {
