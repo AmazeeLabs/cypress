@@ -30,6 +30,7 @@ class CypressOptions {
     'tags' => 'CYPRESS_TAGS',
     'modulePath' => 'CYPRESS_MODULE_PATH',
     'appRoot' => 'DRUPAL_APP_ROOT',
+    'drush' => 'DRUPAL_DRUSH',
   ];
 
   const CLI = [

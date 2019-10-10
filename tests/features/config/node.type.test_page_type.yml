@@ -1,0 +1,11 @@
+uuid: 22f7f9a3-9a56-447f-84db-8aa2f1efa7a0
+langcode: en
+status: true
+dependencies: {  }
+name: 'Test page type'
+type: test_page_type
+description: 'Test page type that is added by configuration synchronization.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: true

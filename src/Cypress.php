@@ -71,6 +71,13 @@ class Cypress implements CypressInterface {
   protected $cypressExecutable;
 
   /**
+   * The path to the drush executable to use.
+   *
+   * @var string
+   */
+  protected $drushExecutable;
+
+  /**
    * Cypress constructor.
    *
    * @param \Drupal\cypress\ProcessManagerInterface $processManager
@@ -91,6 +98,8 @@ class Cypress implements CypressInterface {
    *   The cypress version constraint to use.
    * @param $cypressCucumberVersion
    *   The cypress cucumber version constraint.
+   * @param string $drushExecutable
+   *   The path to the drush executable.
    */
   public function __construct(
     ProcessManagerInterface $processManager,
@@ -101,7 +110,8 @@ class Cypress implements CypressInterface {
     $cypressRoot,
     array $testDirectories,
     $cypressVersion,
-    $cypressCucumberVersion
+    $cypressCucumberVersion,
+    $drushExecutable
   ) {
     $this->processManager = $processManager;
     $this->npmProjectManager = $npmProjectManager;
@@ -112,6 +122,7 @@ class Cypress implements CypressInterface {
     $this->cypressVersion = $cypressVersion;
     $this->cypressCucumberVersion = $cypressCucumberVersion;
     $this->cypressExecutable = $npmRoot . '/node_modules/.bin/cypress';
+    $this->drushExecutable = $drushExecutable;
   }
 
   /**
@@ -134,7 +145,8 @@ class Cypress implements CypressInterface {
     );
 
     $cypressOptions = new CypressOptions($options + [
-      'appRoot' => $this->appRoot
+      'appRoot' => $this->appRoot,
+      'drush' => $this->drushExecutable,
     ]);
     $this->cypressRuntime->initiate($cypressOptions);
     foreach ($this->testDirectories as $name => $path) {

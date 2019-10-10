@@ -2,9 +2,10 @@
 
 namespace Drupal\cypress\TestSite;
 
+
 use Drupal\TestSite\TestSetupInterface;
 
-class CypressTestSite implements TestSetupInterface {
+class CypressTestSetup implements TestSetupInterface {
   /**
    * {@inheritdoc}
    */

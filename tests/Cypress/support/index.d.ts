@@ -29,10 +29,16 @@ declare namespace Cypress {
      *
      * `cy.drupalSetup('my_module/TestSetup.php')`
      *
+     * @param profile
+     *   The install profile. Defaults to testing.
      * @param setup
-     *   The setup file.
+     *   The setup file. Defaults to CypressTestSetup.
+     * @param config
+     *   Path to a config sync directory. Relative to the Drupal root directory.
+     * @param cache
+     *   Path to a zip file that contains a cached site install.
      */
-    drupalInstall(setup?: String): Chainable<Subject>
+    drupalInstall(profile?: string, setup?: string, config?: string, cache?: string): Chainable<Subject>
 
     /**
      * Clean up a test site that has been installed with `drupalInstall`.
