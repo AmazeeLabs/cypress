@@ -17,8 +17,8 @@ addons:
 env:
   global:
     - DRUPAL_CYPRESS=on
-    - DRUPAL_TEST_DB_URL=sqlite://localhost/sites/default/files/db.sqlite
-    - SIMPLETEST_DB=sqlite://localhost/sites/default/files/db.sqlite
+    - DRUPAL_TEST_DB_URL=sqlite://localhost/sites/default/files/test.sqlite
+    - SIMPLETEST_DB=sqlite://localhost/sites/default/files/test.sqlite
     - DRUPAL_TEST_BASE_URL=http://localhost:8888
     - TRAVIS=true
     - DRUPAL_VERSION=8.7.8
