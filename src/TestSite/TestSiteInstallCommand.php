@@ -120,18 +120,25 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
       $this->copyDir($siteDir, $cacheDir);
       $this->fileSystem->copy($dbFile, $cacheDir . '/files/' . basename($dbUrl['path']));
 
+      $settingsFile = file_get_contents($cacheDir . '/settings.php');
       // When writing to cache, replace the database prefix with a pattern that
       // we can find on cache restore.
-      $this->fileSystem->dumpFile($cacheDir . '/settings.php', str_replace(
-        $lockId,
-        'LOCK_ID',
-        file_get_contents($cacheDir . '/settings.php')
-      ));
+      $settingsFile = str_replace($lockId, 'LOCK_ID', $settingsFile);
+      // Replace any absolute paths with a token.
+      $settingsFile = str_replace($this->appRoot, 'APP_ROOT', $settingsFile);
+
+      $this->fileSystem->dumpFile($cacheDir . '/settings.php', $settingsFile);
 
       if ($installCache) {
-        $zippy->create($installCache, [
-          'files' => $this->siteDirectory . '/files',
-        ], TRUE);
+        $files = [];
+        $finder = new Finder();
+        $finder->files()->in($cacheDir);
+        $finder->ignoreDotFiles(FALSE);
+        foreach ($finder as $file) {
+          $files[$file->getRelativePath() . '/' . $file->getBasename()] = $file->getRealPath();
+        }
+
+        $zippy->create($installCache, $files, TRUE);
       }
     }
     else {
@@ -141,13 +148,10 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
       }
       $this->fileSystem->copy($cacheDir . '/files/' . basename($dbUrl['path']), $dbFile);
 
-      // Replace DB_PREFIX in settings php with the db prefix of the current
-      // test run.
-      $this->fileSystem->dumpFile($siteDir . '/settings.php', str_replace(
-        'LOCK_ID',
-        $lockId,
-        file_get_contents($cacheDir . '/settings.php')
-      ));
+      $settingsFile = file_get_contents($cacheDir . '/settings.php');
+      $settingsFile = str_replace('LOCK_ID', $lockId, $settingsFile);
+      $settingsFile = str_replace('APP_ROOT', $this->appRoot, $settingsFile);
+      $this->fileSystem->dumpFile($siteDir . '/settings.php', $settingsFile);
     }
   }
 
