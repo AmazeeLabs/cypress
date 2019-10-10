@@ -80,10 +80,10 @@ Cypress.Commands.add('drupalInstall', (profile, setupFile, configDir, installCac
     Cypress.env('DRUPAL_SITE_PATH', installData.site_path);
     Cypress.env('SIMPLETEST_USER_AGENT', installData.user_agent);
     cy.setCookie('SIMPLETEST_USER_AGENT', encodeURIComponent(installData.user_agent));
-    cy.drush('updb -y -vvv');
-    if (configDir) {
-      cy.drush('cim -y -vvv');
-    }
+    // cy.drush('updb -y -vvv');
+    // if (configDir) {
+    //   cy.drush('cim -y -vvv');
+    // }
   });
 });
 
