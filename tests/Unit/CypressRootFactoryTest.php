@@ -7,6 +7,6 @@ use Drupal\Tests\UnitTestCase;
 
 class CypressRootFactoryTest extends UnitTestCase {
   function testCypressRootDirectory() {
-    $this->assertEquals('/app/.cypress', (new CypressRootFactory('/app'))->getDirectory());
+    $this->assertEquals('/app/drupal-cypress-environment', (new CypressRootFactory('/app'))->getDirectory());
   }
 }

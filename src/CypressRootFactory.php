@@ -10,7 +10,7 @@ class CypressRootFactory {
   /**
    * The cypress directory path below the application directory.
    */
-  const CYPRESS_ROOT_DIRECTORY = '.cypress';
+  const CYPRESS_ROOT_DIRECTORY = 'drupal-cypress-environment';
 
   /**
    * The applications root directory.

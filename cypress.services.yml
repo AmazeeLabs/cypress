@@ -4,7 +4,7 @@ parameters:
   cypress.test_suites:
     features: 'features'
   cypress.version: '^3.4.1'
-  cypress.cucumber_version: '^1.16.0'
+  cypress.cucumber_version: '^1.17.0-beta'
   cypress.executable.node: 'node'
   cypress.executable.npm: 'npm'
   cypress.executable.drush: 'drush'
@@ -46,18 +46,6 @@ services:
     tags:
       - { name: parameter_service }
 
-  cypress.npm_root.factory:
-    class: Drupal\cypress\NpmRootFactory
-    arguments:
-      - '@app.root'
-      - '@cypress.realpath.test_directories'
-    public: false
-  cypress.npm_root:
-    class: SplString
-    factory: cypress.npm_root.factory:getDirectory
-    tags:
-      - { name: parameter_service }
-
   cypress.process_manager:
     class: Drupal\cypress\TtyProcessManager
 
@@ -65,7 +53,7 @@ services:
     class: Drupal\cypress\NpmProjectManager
     arguments:
       - '@cypress.process_manager'
-      - '@cypress.npm_root'
+      - '@cypress.root'
       - '%cypress.executable.npm%'
 
   cypress.runtime:
@@ -80,7 +68,7 @@ services:
       - '@cypress.npm_project_manager'
       - '@cypress.runtime'
       - '@app.root'
-      - '@cypress.npm_root'
+      - '@cypress.root'
       - '@cypress.root'
       - '@cypress.realpath.test_directories'
       - '%cypress.version%'
