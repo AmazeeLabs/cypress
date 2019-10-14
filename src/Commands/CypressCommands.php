@@ -55,10 +55,17 @@ class CypressCommands extends DrushCommands {
 
   /**
    * @command cypress:run
+   * @param spec
+   *   The specs to run. Folders are relative to the Cypress environment.
+   * @option tags
+   *   The tags to run.
    */
-  public function run() {
+  public function run($spec = NULL, $options = ['tags' => '']) {
     $this->logger()->notice('Running Cypress headless mode.');
-    $this->cypress->run([]);
+    if ($spec) {
+      $options['spec'] = $spec;
+    }
+    $this->cypress->run($options);
   }
 }
 

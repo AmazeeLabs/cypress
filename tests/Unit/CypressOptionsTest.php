@@ -51,7 +51,7 @@ class CypressOptionsTest extends UnitTestCase {
 
   public function testEnvironment() {
     $this->assertEquals([
-      'CYPRESS_TAGS' => '@bar',
+      'TAGS' => '@bar',
       'CYPRESS_MODULE_PATH' => realpath(__DIR__ . '/../..'),
     ],  (new CypressOptions([
       'tags' => '@bar',

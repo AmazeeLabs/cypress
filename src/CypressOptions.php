@@ -27,7 +27,7 @@ class CypressOptions {
   ];
 
   const ENVIRONMENT = [
-    'tags' => 'CYPRESS_TAGS',
+    'tags' => 'TAGS',
     'modulePath' => 'CYPRESS_MODULE_PATH',
     'appRoot' => 'DRUPAL_APP_ROOT',
     'drush' => 'DRUPAL_DRUSH',
