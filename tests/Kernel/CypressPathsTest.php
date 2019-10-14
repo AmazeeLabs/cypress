@@ -38,13 +38,4 @@ class CypressPathsTest extends KernelTestBase {
       $this->container->get('cypress.test_directories')
     );
   }
-
-  public function testNpmRootDirectory() {
-    // We just test if the npm root is an existing directory.
-    // The actual path is hard to predict since it depends on where the module
-    // is stored on a development environment.
-    $this->assertDirectoryExists(
-      $this->container->get('cypress.npm_root')
-    );
-  }
 }

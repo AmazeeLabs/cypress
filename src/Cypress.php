@@ -133,7 +133,7 @@ class Cypress implements CypressInterface {
    *
    * @return \Drupal\cypress\CypressOptions
    */
-  protected function initialise(array $options) {
+  public function init(array $options = []) {
     $this->npmProjectManager->ensureInitiated();
     $this->npmProjectManager->ensurePackageVersion(
       'cypress',
@@ -158,8 +158,8 @@ class Cypress implements CypressInterface {
   /**
    * {@inheritDoc}
    */
-  public function run($options = []) {
-    $cypressOptions = $this->initialise($options);
+  public function run(array $options = []) {
+    $cypressOptions = $this->init($options);
     $args = $cypressOptions->getCliOptions();
     array_unshift($args, $this->cypressExecutable);
     $args[] = 'run';
@@ -169,8 +169,8 @@ class Cypress implements CypressInterface {
   /**
    * {@inheritDoc}
    */
-  public function open($options = []) {
-    $cypressOptions = $this->initialise($options);
+  public function open(array $options = []) {
+    $cypressOptions = $this->init($options);
     $args = $cypressOptions->getCliOptions();
     array_unshift($args, $this->cypressExecutable);
     $args[] = 'open';

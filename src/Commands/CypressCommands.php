@@ -38,6 +38,14 @@ class CypressCommands extends DrushCommands {
   }
 
   /**
+   * @command cypress:init
+   */
+  public function init() {
+    $this->logger()->notice('Configuring Cypress environment.');
+    $this->cypress->init([]);
+  }
+
+  /**
    * @command cypress:open
    */
   public function open() {
