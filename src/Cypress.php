@@ -161,8 +161,8 @@ class Cypress implements CypressInterface {
   public function run(array $options = []) {
     $cypressOptions = $this->init($options);
     $args = $cypressOptions->getCliOptions();
+    array_unshift($args, 'run');
     array_unshift($args, $this->cypressExecutable);
-    $args[] = 'run';
     $this->processManager->run($args, $this->cypressRoot);
   }
 
@@ -172,8 +172,8 @@ class Cypress implements CypressInterface {
   public function open(array $options = []) {
     $cypressOptions = $this->init($options);
     $args = $cypressOptions->getCliOptions();
+    array_unshift($args, 'open');
     array_unshift($args, $this->cypressExecutable);
-    $args[] = 'open';
     $this->processManager->run($args, $this->cypressRoot);
   }
 }

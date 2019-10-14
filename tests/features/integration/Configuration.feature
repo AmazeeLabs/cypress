@@ -1,3 +1,4 @@
+@Configuration
 Feature: Install from configuration
   The 'cy.drupalInstall' allows to run tests against an existing configuration
   directory.
