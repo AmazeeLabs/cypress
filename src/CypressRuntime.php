@@ -93,6 +93,14 @@ class CypressRuntime implements CypressRuntimeInterface {
       $this->fileSystem->remove($this->cypressRoot . '/fixtures');
     }
 
+    if ($this->fileSystem->exists($this->cypressRoot . '/support')) {
+      $this->fileSystem->remove($this->cypressRoot . '/support');
+    }
+
+    if ($this->fileSystem->exists($this->cypressRoot . '/plugins')) {
+      $this->fileSystem->remove($this->cypressRoot . '/plugins');
+    }
+
     $this->fileSystem->mkdir($this->cypressRoot . '/integration');
     $this->fileSystem->mkdir($this->cypressRoot . '/integration/common');
     $this->fileSystem->mkdir($this->cypressRoot . '/fixtures');
@@ -132,7 +140,8 @@ class CypressRuntime implements CypressRuntimeInterface {
     }
 
     if ($this->fileSystem->exists($path . '/support/index.js')) {
-      $this->support[] = $path;
+      $this->support[] = $name;
+      $this->fileSystem->mirror($path . '/support', $this->cypressRoot . '/support/' . $name);
       $this->fileSystem->dumpFile($this->cypressRoot . '/support.js', $this->generateSupportJs());
     }
 
@@ -175,8 +184,8 @@ class CypressRuntime implements CypressRuntimeInterface {
    *   The content for a local index.js.
    */
   protected function generateSupportJs() {
-    $index = array_map(function ($path) {
-      return "require('$path/support/index.js');";
+    $index = array_map(function ($name) {
+      return "require('./support/$name/index.js');";
     }, $this->support);
     array_unshift(
       $index,

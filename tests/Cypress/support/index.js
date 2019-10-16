@@ -1,7 +1,8 @@
 // @ts-check
 /// <reference types="Cypress" />
 
-require('./commands.js');
+import '@testing-library/cypress/add-commands';
+import './commands.js';
 
 /**
  * Override visit command to inject our custom headers.
