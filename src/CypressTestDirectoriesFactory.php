@@ -35,6 +35,13 @@ class CypressTestDirectoriesFactory {
   protected $moduleHandler;
 
   /**
+   * The process environment variables.
+   *
+   * @var string[]
+   */
+  protected $environment;
+
+  /**
    * A filesystem component.
    *
    * @var \Symfony\Component\Filesystem\Filesystem
@@ -48,10 +55,13 @@ class CypressTestDirectoriesFactory {
    *   The application root.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   A module handler to scan for directories in modules.
+   * @param string[] $environment
+   *   Process environment variables.
    */
-  public function __construct($appRoot, ModuleHandlerInterface $moduleHandler) {
+  public function __construct($appRoot, ModuleHandlerInterface $moduleHandler, array $environment) {
     $this->appRoot = $appRoot;
     $this->moduleHandler = $moduleHandler;
+    $this->environment = $environment;
     $this->fileSystem = new Filesystem();
   }
 
@@ -67,9 +77,11 @@ class CypressTestDirectoriesFactory {
       $directories[$id] = $module->getPath() . '/' . static::CYPRESS_TEST_DIRECTORY;
     }
 
-    foreach ($_ENV as $key => $value) {
-      if (substr($key,0, strlen(static::CYPRESS_SUITE_PREFIX)) === static::CYPRESS_SUITE_PREFIX) {
-        $directories[strtolower(substr($key,strlen(static::CYPRESS_SUITE_PREFIX)))] = $value;
+    $prefixLength = strlen(static::CYPRESS_SUITE_PREFIX);
+
+    foreach ($this->environment as $key => $value) {
+      if (substr($key, 0, $prefixLength) === static::CYPRESS_SUITE_PREFIX) {
+        $directories[strtolower(substr($key, $prefixLength))] = $value;
       }
     }
 

@@ -32,6 +32,7 @@ cache:
     - $HOME/.composer
     - $HOME/.cache/Cypress
     - $DRUPAL_BUILD_DIR/drupal-cypress-environment/node_modules
+    - $DRUPAL_BUILD_DIR/vendor
 
 before_install:
   # Disable xdebug.

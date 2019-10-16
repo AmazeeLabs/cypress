@@ -15,12 +15,24 @@ services:
     tags:
       - { name: parameter_service }
 
+  cypress.env.factory:
+    class: Drupal\cypress\EnvironmentFactory
+    public: false
+
+  cypress.env.full:
+    class: ArrayObject
+    factory: cypress.env.factory:getEnvironment
+    tags:
+      - { name: parameter_service }
+
   cypress.test_directories.factory:
     class: Drupal\cypress\CypressTestDirectoriesFactory
     arguments:
       - '@app.root'
       - '@module_handler'
+      - '@cypress.env.full'
     public: false
+
   cypress.test_directories:
     class: ArrayObject
     factory: cypress.test_directories.factory:getDirectories

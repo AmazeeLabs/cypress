@@ -28,12 +28,13 @@ class CypressPathsTest extends KernelTestBase {
   }
 
   public function testCypressTestDirectories() {
+    $_ENV[CypressTestDirectoriesFactory::CYPRESS_SUITE_PREFIX . 'FEATURES'] = 'features';
     $appRoot = $this->container->get('app.root');
     $modulePath = drupal_get_path('module', 'cypress');
     $this->assertEquals(
       [
         'cypress' => $appRoot . '/' . $modulePath . '/' . CypressTestDirectoriesFactory::CYPRESS_TEST_DIRECTORY,
-        'features' => realpath($appRoot . '/' . $modulePath . '/tests/features'),
+        'features' => $appRoot . '/features',
       ],
       $this->container->get('cypress.test_directories')
     );
