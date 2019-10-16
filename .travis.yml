@@ -30,6 +30,7 @@ env:
 cache:
   directories:
     - $HOME/.composer
+    - $HOME/.cache/Cypress
     - $DRUPAL_BUILD_DIR/drupal-cypress-environment/node_modules
 
 before_install:
