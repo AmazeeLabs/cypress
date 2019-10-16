@@ -24,6 +24,7 @@ env:
     - DRUPAL_VERSION=8.7.8
     - DRUPAL_BUILD_DIR=$TRAVIS_BUILD_DIR/../drupal-$DRUPAL_VERSION
     - PATH=$PATH:$DRUPAL_BUILD_DIR/vendor/bin
+    - CYPRESS_SUITE_FEATUES=features
 
 # Cache composer downloads.
 cache:

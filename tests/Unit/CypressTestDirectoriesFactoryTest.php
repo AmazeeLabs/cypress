@@ -10,6 +10,7 @@ use org\bovigo\vfs\vfsStream;
 
 class CypressTestDirectoriesFactoryTest extends UnitTestCase {
   public function testCypressTestDirectories() {
+    $_ENV[CypressTestDirectoriesFactory::CYPRESS_SUITE_PREFIX . 'features'] = 'features';
     $vfs = vfsStream::setup('app');
     $appRoot = vfsStream::create([
       'app' => [
@@ -42,9 +43,6 @@ class CypressTestDirectoriesFactoryTest extends UnitTestCase {
     $this->assertEquals([
       'b' => $appRoot . '/modules/b/tests/Cypress',
       'features' => $appRoot . '/features',
-    ], (new CypressTestDirectoriesFactory($appRoot, $moduleHandler->reveal(), [
-      'features' => 'features',
-      'idontexist' => 'idontexist',
-    ]))->getDirectories());
+    ], (new CypressTestDirectoriesFactory($appRoot, $moduleHandler->reveal()))->getDirectories());
   }
 }

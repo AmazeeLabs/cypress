@@ -1,8 +1,4 @@
 parameters:
-  # Additional directories to scan for tests.
-  # Relative to @app.root.
-  cypress.test_suites:
-    features: 'features'
   cypress.executable.node: 'node'
   cypress.executable.npm: 'npm'
   cypress.executable.drush: 'drush'
@@ -24,7 +20,6 @@ services:
     arguments:
       - '@app.root'
       - '@module_handler'
-      - '%cypress.test_suites%'
     public: false
   cypress.test_directories:
     class: ArrayObject
