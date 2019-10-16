@@ -3,6 +3,7 @@
 namespace Drupal\cypress;
 
 use Composer\Semver\VersionParser;
+use Drupal\Component\Utility\NestedArray;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -58,6 +59,41 @@ class NpmProjectManager implements NpmProjectManagerInterface {
   /**
    * {@inheritDoc}
    */
+  public function merge($file) {
+    $packageJson = json_decode(file_get_contents($this->packageDirectory . '/package.json'), TRUE);
+    $dependencies = $packageJson['dependencies'] ?? [];
+
+    $merge = json_decode(file_get_contents($file), TRUE);
+    if (array_key_exists('dependencies', $merge)) {
+      foreach ($merge['dependencies'] as $package => $version) {
+        if (isset($dependencies[$package])) {
+          $currentConstraint = (new VersionParser())->parseConstraints($dependencies[$package]);
+          $newConstraint = (new VersionParser())->parseConstraints($version);
+          // The new constraint is already covered by the current constraint.
+          // Don't adjust versions.
+          if ($newConstraint->matches($currentConstraint) && $newConstraint < $currentConstraint) {
+            continue;
+          }
+          if (!($newConstraint->matches($currentConstraint) || $currentConstraint->matches($newConstraint))) {
+            throw new \Exception("Incompatible versions of package '$package': $version / {$dependencies[$package]}");
+          }
+        }
+        $this->ensurePackageVersion($package, $version);
+      }
+    }
+
+    unset($merge['dependencies']);
+    $packageJson = NestedArray::mergeDeep($packageJson, $merge);
+
+    $this->fileSystem->dumpFile(
+      $this->packageDirectory . '/package.json',
+      json_encode($packageJson, JSON_PRETTY_PRINT)
+    );
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   public function ensureInitiated() {
     if (!$this->fileSystem->exists($this->packageDirectory)) {
       $this->fileSystem->mkdir($this->packageDirectory);
@@ -70,10 +106,6 @@ class NpmProjectManager implements NpmProjectManagerInterface {
     if (!$this->fileSystem->exists($this->packageDirectory . '/node_modules')) {
       $this->processManager->run([$this->npmExecutable, 'install'], $this->packageDirectory);
     }
-
-    $packageJson = json_decode($this->packageDirectory . '/package.json', TRUE);
-    $packageJson['cypress-cucumber-preprocessor']['nonGlobalStepDefinitions'] = TRUE;
-    $this->fileSystem->dumpFile($this->packageDirectory . '/package.json', json_encode($packageJson, JSON_PRETTY_PRINT));
   }
 
   /**
