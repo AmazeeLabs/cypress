@@ -32,17 +32,6 @@ services:
     tags:
       - { name: parameter_service }
 
-  cypress.realpath.factory:
-    class: Drupal\cypress\RealPathFactory
-    arguments:
-      - '@cypress.test_directories'
-    public: false
-  cypress.realpath.test_directories:
-    class: ArrayObject
-    factory: cypress.realpath.factory:getPaths
-    tags:
-      - { name: parameter_service }
-
   cypress.process_manager:
     class: Drupal\cypress\TtyProcessManager
 
@@ -68,7 +57,7 @@ services:
       - '@app.root'
       - '@cypress.root'
       - '@cypress.root'
-      - '@cypress.realpath.test_directories'
+      - '@cypress.test_directories'
       - '%cypress.executable.drush%'
 
   # Header based sessions

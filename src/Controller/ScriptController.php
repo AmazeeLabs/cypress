@@ -3,6 +3,7 @@
 namespace Drupal\cypress\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -27,7 +28,7 @@ class ScriptController extends ControllerBase {
     $suite = $url['scheme'];
     $path = $url['path'];
 
-    $suites = \Drupal::getContainer()->get('cypress.realpath.test_directories');
+    $suites = \Drupal::getContainer()->get('cypress.test_directories');
     $args = $content->args ?? [];
 
     if (!array_key_exists($suite, $suites)) {
