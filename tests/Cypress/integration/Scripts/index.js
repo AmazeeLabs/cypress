@@ -14,7 +14,7 @@ When(/^the test accesses the main content listing$/, function () {
 
 // Then there should be an entry for the page with title "Test"
 Then(/^there should be an entry for the page with title "([^"]*)"$/, function (title) {
-  cy.contains(title);
+  cy.findByText(title);
 });
 
 // Given the test case has set up a new test site

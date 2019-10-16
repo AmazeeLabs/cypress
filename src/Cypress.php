@@ -50,20 +50,6 @@ class Cypress implements CypressInterface {
   protected $testDirectories;
 
   /**
-   * The cypress version constraint to use.
-   *
-   * @var string
-   */
-  protected $cypressVersion;
-
-  /**
-   * The cypress cucumber version constraint.
-   *
-   * @var string
-   */
-  protected $cypressCucumberVersion;
-
-  /**
    * The path to the cypress executable to use.
    *
    * @var string
@@ -94,10 +80,6 @@ class Cypress implements CypressInterface {
    *   The cypress configuration directory.
    * @param array $testDirectories
    *   All discovered test suites.
-   * @param $cypressVersion
-   *   The cypress version constraint to use.
-   * @param $cypressCucumberVersion
-   *   The cypress cucumber version constraint.
    * @param string $drushExecutable
    *   The path to the drush executable.
    */
@@ -109,8 +91,6 @@ class Cypress implements CypressInterface {
     $npmRoot,
     $cypressRoot,
     array $testDirectories,
-    $cypressVersion,
-    $cypressCucumberVersion,
     $drushExecutable
   ) {
     $this->processManager = $processManager;
@@ -119,8 +99,6 @@ class Cypress implements CypressInterface {
     $this->appRoot = $appRoot;
     $this->cypressRoot = $cypressRoot;
     $this->testDirectories = $testDirectories;
-    $this->cypressVersion = $cypressVersion;
-    $this->cypressCucumberVersion = $cypressCucumberVersion;
     $this->cypressExecutable = $npmRoot . '/node_modules/.bin/cypress';
     $this->drushExecutable = $drushExecutable;
   }
@@ -135,14 +113,6 @@ class Cypress implements CypressInterface {
    */
   public function init(array $options = []) {
     $this->npmProjectManager->ensureInitiated();
-    $this->npmProjectManager->ensurePackageVersion(
-      'cypress',
-      $this->cypressVersion
-    );
-    $this->npmProjectManager->ensurePackageVersion(
-      'cypress-cucumber-preprocessor',
-      $this->cypressCucumberVersion
-    );
 
     $cypressOptions = new CypressOptions($options + [
       'appRoot' => $this->appRoot,

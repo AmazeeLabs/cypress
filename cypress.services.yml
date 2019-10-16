@@ -3,8 +3,6 @@ parameters:
   # Relative to @app.root.
   cypress.test_suites:
     features: 'features'
-  cypress.version: '^3.4.1'
-  cypress.cucumber_version: '^1.17.0-beta'
   cypress.executable.node: 'node'
   cypress.executable.npm: 'npm'
   cypress.executable.drush: 'drush'
@@ -34,7 +32,6 @@ services:
     tags:
       - { name: parameter_service }
 
-
   cypress.realpath.factory:
     class: Drupal\cypress\RealPathFactory
     arguments:
@@ -60,6 +57,7 @@ services:
     class: Drupal\cypress\CypressRuntime
     arguments:
       - '@cypress.root'
+      - '@cypress.npm_project_manager'
 
   cypress:
     class: Drupal\cypress\Cypress
@@ -71,8 +69,6 @@ services:
       - '@cypress.root'
       - '@cypress.root'
       - '@cypress.realpath.test_directories'
-      - '%cypress.version%'
-      - '%cypress.cucumber_version%'
       - '%cypress.executable.drush%'
 
   # Header based sessions

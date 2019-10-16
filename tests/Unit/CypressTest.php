@@ -46,8 +46,6 @@ class CypressTest extends UnitTestCase {
     $cypressOptions = new CypressOptions($this->options);
 
     $npmProjectManager->ensureInitiated()->shouldBeCalledOnce();
-    $npmProjectManager->ensurePackageVersion('cypress', '1.0')->shouldBeCalledOnce();
-    $npmProjectManager->ensurePackageVersion('cypress-cucumber-preprocessor', '1.0')->shouldBeCalledOnce();
 
     $cypressRuntime->initiate($cypressOptions)->shouldBeCalledOnce();
     $cypressRuntime->addSuite('a', '/app/tests/a')->shouldBeCalledOnce();

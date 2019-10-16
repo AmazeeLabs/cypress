@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "cypress": "^3.4.1",
+    "cypress-cucumber-preprocessor": "^1.17.0-beta",
+    "cypress-file-upload": "^3.3.4",
+    "cypress-shadow-dom": "^1.0.0",
+    "@testing-library/cypress": "^5.0.2"
+  },
+  "cypress-cucumber-preprocessor": {
+    "nonGlobalStepDefinitions": true
+  }
+}
