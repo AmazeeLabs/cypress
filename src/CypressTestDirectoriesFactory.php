@@ -2,8 +2,10 @@
 
 namespace Drupal\cypress;
 
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Generates the list of directories containing Cypress tests information.
@@ -44,6 +46,13 @@ class CypressTestDirectoriesFactory {
   protected $fileSystem;
 
   /**
+   * The site path to search for a testing.services.yml
+   *
+   * @var string
+   */
+  protected $sitePath;
+
+  /**
    * CypressTestDirectoriesFactory constructor.
    *
    * @param string $appRoot
@@ -52,12 +61,15 @@ class CypressTestDirectoriesFactory {
    *   A module handler to scan for directories in modules.
    * @param string[] $directories
    *   Externally provided paths.
+   * @param string $sitePath
+   *   The site path to search for a testing.services.yml
    */
-  public function __construct($appRoot, ModuleHandlerInterface $moduleHandler, array $directories) {
+  public function __construct($appRoot,ModuleHandlerInterface $moduleHandler, $directories, $sitePath) {
     $this->appRoot = $appRoot;
     $this->moduleHandler = $moduleHandler;
     $this->directories = $directories;
     $this->fileSystem = new Filesystem();
+    $this->sitePath = $sitePath;
   }
 
   /**
@@ -71,6 +83,12 @@ class CypressTestDirectoriesFactory {
     foreach ($this->moduleHandler->getModuleList() as $id => $module) {
       $directories[$id] = $module->getPath() . '/' . static::CYPRESS_TEST_DIRECTORY;
     }
+
+    if ($this->fileSystem->exists($this->sitePath . '/testing.services.yml')) {
+      $yml = Yaml::parseFile($this->sitePath . '/testing.services.yml');
+      $directories += NestedArray::getValue($yml, ['parameters', 'cypress.test_suites']) ?? [];
+    }
+
     return array_filter(array_map(function ($dir) {
       return $this->fileSystem->isAbsolutePath($dir) ? $dir : $this->appRoot . '/' . $dir;
     }, $directories), function ($dir) {

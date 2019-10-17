@@ -3,7 +3,7 @@ services:
     class: Drupal\cypress\Commands\CypressCommands
     arguments:
       - '@cypress'
-      - '@cypress.realpath.test_directories'
+      - '@cypress.test_directories'
       - '@app.root'
     tags:
       - { name: drush.command }

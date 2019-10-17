@@ -1,0 +1,10 @@
+parameters:
+  # Enable insecure features for testing.
+  # This flag should only be enabled in testing.services.yml
+  cypress.enabled: true
+  # List of additional test suite directories.
+  # Relative to the Drupal root directory.
+  cypress.test_suites:
+    features: 'features'
+  # The drush executable to use when executing drush in test sites.
+  cypress.executable.drush: 'drush'
