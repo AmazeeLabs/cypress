@@ -1,8 +1,6 @@
 parameters:
-  # Additional directories to scan for tests.
-  # Relative to @app.root.
-  cypress.test_suites:
-    features: 'features'
+  cypress.enabled: false
+  cypress.test_suites: []
   cypress.executable.node: 'node'
   cypress.executable.npm: 'npm'
   cypress.executable.drush: 'drush'
@@ -25,21 +23,11 @@ services:
       - '@app.root'
       - '@module_handler'
       - '%cypress.test_suites%'
+      - '@site.path'
     public: false
   cypress.test_directories:
     class: ArrayObject
     factory: cypress.test_directories.factory:getDirectories
-    tags:
-      - { name: parameter_service }
-
-  cypress.realpath.factory:
-    class: Drupal\cypress\RealPathFactory
-    arguments:
-      - '@cypress.test_directories'
-    public: false
-  cypress.realpath.test_directories:
-    class: ArrayObject
-    factory: cypress.realpath.factory:getPaths
     tags:
       - { name: parameter_service }
 
@@ -68,7 +56,7 @@ services:
       - '@app.root'
       - '@cypress.root'
       - '@cypress.root'
-      - '@cypress.realpath.test_directories'
+      - '@cypress.test_directories'
       - '%cypress.executable.drush%'
 
   # Header based sessions

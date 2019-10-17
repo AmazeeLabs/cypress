@@ -4,10 +4,12 @@ namespace Drupal\cypress\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Consolidation\SiteProcess\Util\Tty;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\cypress\CypressInterface;
 use Drush\Commands\DrushCommands;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Yaml\Yaml;
 
 class CypressCommands extends DrushCommands {
   protected $cypress;
@@ -37,20 +39,52 @@ class CypressCommands extends DrushCommands {
     return new RowsOfFields($rows);
   }
 
+  protected function setupTestingServices() {
+    $sitePath = \Drupal::service('site.path');
+    $modulePath = drupal_get_path('module', 'cypress');
+    if (!$this->fileSystem->exists($sitePath . '/testing.services.yml')) {
+      if (!$this->confirm("No 'testing.services.yml' found in '$sitePath'. Create one?", TRUE)) {
+        $this->logger->warning("Aborted.");
+        return FALSE;
+      }
+      try {
+        $this->fileSystem->copy(
+          $modulePath . '/example.testing.services.yml',
+          $sitePath . '/testing.services.yml'
+        );
+      } catch (\Exception $exc) {
+        $this->logger->warning("Could not create '$sitePath/testing.services.yml'.");
+        $this->logger->warning("Please copy '$modulePath/example.testing.services.yml' to '$sitePath/testing.services.yml'.");
+        return FALSE;
+      }
+    }
+    $services = Yaml::parseFile($sitePath . '/testing.services.yml');
+    if (!NestedArray::getValue($services, ['parameters', 'cypress.enabled'])) {
+      $this->logger->warning("Cypress is not enabled in '$sitePath/testing.services.yml'.");
+      $this->logger->warning("Please set the 'cypress.enabled' parameter to true.");
+      return FALSE;
+    }
+    return TRUE;
+  }
+
   /**
    * @command cypress:init
    */
   public function init() {
-    $this->logger()->notice('Configuring Cypress environment.');
-    $this->cypress->init([]);
+    if ($this->setupTestingServices()) {
+      $this->logger()->notice('Configuring Cypress environment.');
+      $this->cypress->init([]);
+    }
   }
 
   /**
    * @command cypress:open
    */
   public function open() {
-    $this->logger()->notice('Opening Cypress user interface.');
-    $this->cypress->open([]);
+    if ($this->setupTestingServices()) {
+      $this->logger()->notice('Opening Cypress user interface.');
+      $this->cypress->open([]);
+    }
   }
 
   /**
@@ -61,11 +95,13 @@ class CypressCommands extends DrushCommands {
    *   The tags to run.
    */
   public function run($spec = NULL, $options = ['tags' => '']) {
-    $this->logger()->notice('Running Cypress headless mode.');
-    if ($spec) {
-      $options['spec'] = $spec;
+    if ($this->setupTestingServices()) {
+      $this->logger()->notice('Running Cypress headless mode.');
+      if ($spec) {
+        $options['spec'] = $spec;
+      }
+      $this->cypress->run($options);
     }
-    $this->cypress->run($options);
   }
 }
 

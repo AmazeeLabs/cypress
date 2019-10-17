@@ -22,6 +22,10 @@ class CypressTestDirectoriesFactoryTest extends UnitTestCase {
           ],
         ],
         'features' => [],
+        'tests' => [],
+        'site' => [
+          'testing.services.yml' => 'parameters: { cypress.test_suites: {tests: "tests"}}'
+        ]
       ],
     ], $vfs)->url() . '/app';
 
@@ -42,9 +46,10 @@ class CypressTestDirectoriesFactoryTest extends UnitTestCase {
     $this->assertEquals([
       'b' => $appRoot . '/modules/b/tests/Cypress',
       'features' => $appRoot . '/features',
+      'tests' => $appRoot . '/tests',
     ], (new CypressTestDirectoriesFactory($appRoot, $moduleHandler->reveal(), [
       'features' => 'features',
       'idontexist' => 'idontexist',
-    ]))->getDirectories());
+    ], $appRoot . '/site'))->getDirectories());
   }
 }

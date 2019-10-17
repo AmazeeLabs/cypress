@@ -27,7 +27,7 @@ class ScriptController extends ControllerBase {
     $suite = $url['scheme'];
     $path = $url['path'];
 
-    $suites = \Drupal::getContainer()->get('cypress.realpath.test_directories');
+    $suites = \Drupal::getContainer()->get('cypress.test_directories');
     $args = $content->args ?? [];
 
     if (!array_key_exists($suite, $suites)) {
