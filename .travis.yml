@@ -52,6 +52,7 @@ install:
   - ln -s $TRAVIS_BUILD_DIR/tests/features $DRUPAL_BUILD_DIR/features
 
 script:
+  - cp $TRAVIS_BUILD_DIR/example.testing.services.yml $DRUPAL_BUILD_DIR/sites/default/testing.services.yml
   - cd $DRUPAL_BUILD_DIR
   # Do a minimal Drupal installation. Required for drush.
   - php core/scripts/drupal install -q minimal
@@ -62,4 +63,4 @@ script:
   # Enable the cypress module
   - ./vendor/bin/drush en cypress
   # Run all Cypress tests
-  - ./vendor/bin/drush -d cypress:run -y
+  - ./vendor/bin/drush cypress:run -y
