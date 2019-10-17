@@ -16,6 +16,8 @@ class TtyProcessManager implements ProcessManagerInterface {
   public function run(array $commandLine, $workingDirectory, $environment = []) {
     $process = new Process($commandLine, $workingDirectory);
     $process->setTty(Tty::isTtySupported());
+    $process->setTimeout(0.0);
+    $process->setIdleTimeout(0.0);
     $process->mustRun();
   }
 }
