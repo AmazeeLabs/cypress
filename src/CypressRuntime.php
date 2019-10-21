@@ -89,8 +89,8 @@ class CypressRuntime implements CypressRuntimeInterface {
       $this->fileSystem->remove($this->cypressRoot . '/integration');
     }
 
-    if ($this->fileSystem->exists($this->cypressRoot . '/fixtures')) {
-      $this->fileSystem->remove($this->cypressRoot . '/fixtures');
+    if ($this->fileSystem->exists($this->cypressRoot . '/suites')) {
+      $this->fileSystem->remove($this->cypressRoot . '/suites');
     }
 
     if ($this->fileSystem->exists($this->cypressRoot . '/support')) {
@@ -103,7 +103,7 @@ class CypressRuntime implements CypressRuntimeInterface {
 
     $this->fileSystem->mkdir($this->cypressRoot . '/integration');
     $this->fileSystem->mkdir($this->cypressRoot . '/integration/common');
-    $this->fileSystem->mkdir($this->cypressRoot . '/fixtures');
+    $this->fileSystem->mkdir($this->cypressRoot . '/suites');
 
     $this->fileSystem->dumpFile($this->cypressRoot . '/cypress.json', $options->getCypressJson());
     $this->fileSystem->dumpFile($this->cypressRoot . '/plugins.js', $this->generatePluginsJs());
@@ -118,6 +118,13 @@ class CypressRuntime implements CypressRuntimeInterface {
       return FALSE;
     }
 
+    if ($this->fileSystem->exists($path)) {
+      $this->fileSystem->symlink(
+        $path,
+        $this->cypressRoot . '/suites/' . $name
+      );
+    }
+
     if ($this->fileSystem->exists($path . '/integration')) {
       $this->fileSystem->symlink(
         $path . '/integration',
@@ -129,13 +136,6 @@ class CypressRuntime implements CypressRuntimeInterface {
       $this->fileSystem->symlink(
         $path . '/steps',
         $this->cypressRoot . '/integration/common/' . $name
-      );
-    }
-
-    if ($this->fileSystem->exists($path . '/fixtures')) {
-      $this->fileSystem->symlink(
-        $path . '/fixtures',
-        $this->cypressRoot . '/fixtures/' . $name
       );
     }
 

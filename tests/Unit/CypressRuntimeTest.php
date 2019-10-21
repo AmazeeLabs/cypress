@@ -78,7 +78,7 @@ class CypressRuntimeTest extends UnitTestCase {
     ]);
     $this->cypressRuntime->initiate($this->cypressOptions);
     $this->assertFileNotExists($this->cypressRoot . '/integration/foo');
-    $this->assertFileNotExists($this->cypressRoot . '/fixtures/foo');
+    $this->assertFileNotExists($this->cypressRoot . '/suites/foo');
   }
 
   public function testGenerateCypressJson() {
@@ -105,9 +105,6 @@ class CypressRuntimeTest extends UnitTestCase {
         'steps' => [
           'foo' => 'bar',
         ],
-        'fixtures' => [
-          'foo' => 'bar',
-        ],
         'support' => [
           'index.js' => 'bar',
         ],
@@ -122,7 +119,7 @@ class CypressRuntimeTest extends UnitTestCase {
     $this->cypressRuntime->addSuite('a', $this->fileSystem->url() . '/a');
 
     $this->assertStringEqualsFile($this->cypressRoot . '/integration/a/foo', 'bar');
-    $this->assertStringEqualsFile($this->cypressRoot . '/fixtures/a/foo', 'bar');
+    $this->assertStringEqualsFile($this->cypressRoot . '/suites/a/integration/foo', 'bar');
     $this->assertStringEqualsFile($this->cypressRoot . '/integration/common/a/foo', 'bar');
     $this->assertStringEqualsFile(
       $this->cypressRoot . '/support.js',

@@ -66,7 +66,7 @@ Cypress.Commands.add('drupalScript', (script, args) => {
 });
 
 Cypress.Commands.add('drupalInstall', (profile, setupFile, configDir, installCache) => {
-  setupFile = setupFile ? `--setup-file "drupal-cypress-environment/fixtures/${setupFile}"` : '';
+  setupFile = setupFile ? `--setup-file "${setupFile}"` : '';
   cy.exec(`php ${Cypress.env('CYPRESS_MODULE_PATH')}/scripts/test-site.php install --install-profile ${profile || 'testing'} ${setupFile} --base-url ${baseUrl()} --db-url ${dbUrl()} --json`, {
     env: {
       'DRUPAL_CONFIG_DIR': configDir,

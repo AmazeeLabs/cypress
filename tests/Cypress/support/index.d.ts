@@ -1,18 +1,66 @@
 declare namespace Cypress {
 
+  /**
+   * Set of options that can be passed to cy.drupalInstall.
+   */
+  interface InstallationOptions {
+
+    /**
+     * The Drupal profile to install. Defaults to 'minimal'.
+     */
+    profile?: string
+
+    /**
+     * A configuration directory to install from, relative to DRUPAL_ROOT.
+     */
+    config?: string
+
+    /**
+     * A Drupal test setup script.
+     *
+     * The path should be prefixed with the test suite's name as scheme.
+     */
+    setup?: string
+
+    /**
+     * A path to a zip file with a cached version of this install.
+     *
+     * If the file does not exist, it will be created after successful
+     * installation.
+     */
+    cache?: string
+  }
+
+  /**
+   * Possible options for cy.drupalSession.
+   */
   interface SessionOptions {
+    /**
+     * The user name to authenticate with.
+     */
     user?: string
+
+    /**
+     * The system language code to initiate.
+     */
     language?: string
+
+    /**
+     * The workspace machine name to initiate.
+     */
     workspace?: string
+
+    /**
+     * Flag to indicate if the toolbar should be displayed.
+     */
     toolbar?: boolean
   }
 
+  /**
+   * Dictionary of arbitrary property values for filtering entities.
+   */
   interface SearchProperties {
     [key: string]: string
-  }
-
-  interface EntityProperties {
-    [key: string]: string | EntityProperties
   }
 
   interface Chainable<Subject> {
@@ -56,25 +104,16 @@ declare namespace Cypress {
     /**
      * Execute a php script with arguments.
      *
-     * Automatically aliases module paths. Given there is a module "my_module"
-     *  with a script file in:
-     *
-     * `tests/Cypress/integration/Cypress/testPage.php`
-     *
-     * ... then `drupalScript` can be called like this:
+     * The script path uses the test suite's name as scheme:
      *
      * ```
-     * cy.drupalScript('my_module/testPage.php', {'title': 'Test title'})`
+     * cy.drupalScript("cypress:integration/Scripts/testPage.php");
      * ```
-     *
-     * Scripts in the global 'steps' folder are moved to 'common':
-     *
-     * `cy.drupalScript('common/my_module/testPage.php', {'title': 'Test title'})`
      *
      * @param script
      * @param arguments
      */
-    drupalScript(script: string, arguments?: any): Chainable<Subject>
+    drupalScript(script: string): Chainable<Subject>
 
     /**
      * Initiate a Drupal session.
@@ -82,31 +121,6 @@ declare namespace Cypress {
      * @param options
      */
     drupalSession(options: SessionOptions): Chainable<Subject>
-
-    /**
-     *
-     * @param type
-     * @param properties
-     * @param session
-     */
-    // drupalCreateEntity(type: string, properties: EntityProperties, session: SessionOptions): Chainable<Subject>
-
-    /**
-     *
-     * @param type
-     * @param search
-     * @param properties
-     * @param session
-     */
-    // drupalEditEntity(type: string, search: SearchProperties, properties: EntityProperties, session: SessionOptions): Chainable<Subject>
-
-    /**
-     *
-     * @param type
-     * @param search
-     * @param session
-     */
-    // drupalDeleteEntity(type: string, search: SearchProperties, session: SessionOptions): Chainable<Subject>
 
     /**
      * Visit an entity link.

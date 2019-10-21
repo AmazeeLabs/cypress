@@ -51,6 +51,14 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
     return $parameters;
   }
 
+  protected function getSetupClass($file) {
+    $url = parse_url($file);
+    if (isset($url['scheme'])) {
+      return parent::getSetupClass("drupal-cypress-environment/suites/{$url['scheme']}/{$url['path']}");
+    }
+    return parent::getSetupClass($file);
+  }
+
   /**
    * {@inheritDoc}
    *
