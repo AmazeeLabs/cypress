@@ -5,7 +5,7 @@ use Drupal\node\Entity\Node;
 
 $node = Node::create([
   'type' => 'page',
-  'title' => $args->title ?? 'Testpage',
+  'title' => 'Testpage',
 ]);
 $node->save();
 echo $node->id();

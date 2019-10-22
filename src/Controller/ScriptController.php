@@ -28,7 +28,6 @@ class ScriptController extends ControllerBase {
     $path = $url['path'];
 
     $suites = \Drupal::getContainer()->get('cypress.test_directories');
-    $args = $content->args ?? [];
 
     if (!array_key_exists($suite, $suites)) {
       return new Response('Unknown test suite "' . $suite . '".', 404);

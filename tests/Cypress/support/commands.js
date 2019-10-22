@@ -65,13 +65,13 @@ Cypress.Commands.add('drupalScript', (script, args) => {
   });
 });
 
-Cypress.Commands.add('drupalInstall', (profile, setupFile, configDir, installCache) => {
-  setupFile = setupFile ? `--setup-file "drupal-cypress-environment/fixtures/${setupFile}"` : '';
-  cy.exec(`php ${Cypress.env('CYPRESS_MODULE_PATH')}/scripts/test-site.php install --install-profile ${profile || 'testing'} ${setupFile} --base-url ${baseUrl()} --db-url ${dbUrl()} --json`, {
+Cypress.Commands.add('drupalInstall', (options) => {
+  const setupFile = options.setup ? `--setup-file "${options.setup}"` : '';
+  cy.exec(`php ${Cypress.env('CYPRESS_MODULE_PATH')}/scripts/test-site.php install --install-profile ${options.profile || 'testing'} ${setupFile} --base-url ${baseUrl()} --db-url ${dbUrl()} --json`, {
     env: {
-      'DRUPAL_CONFIG_DIR': configDir,
+      'DRUPAL_CONFIG_DIR': options.config,
       'DRUPAL_APP_ROOT': Cypress.env('DRUPAL_APP_ROOT'),
-      'DRUPAL_INSTALL_CACHE': installCache,
+      'DRUPAL_INSTALL_CACHE': options.cache,
     },
     timeout: 3000000
   }).then(result => {
@@ -81,7 +81,7 @@ Cypress.Commands.add('drupalInstall', (profile, setupFile, configDir, installCac
     Cypress.env('SIMPLETEST_USER_AGENT', installData.user_agent);
     cy.setCookie('SIMPLETEST_USER_AGENT', encodeURIComponent(installData.user_agent));
     cy.drush('updb -y -vvv');
-    if (configDir) {
+    if (options.config) {
       cy.drush('cim -y -vvv');
     }
   });

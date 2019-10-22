@@ -1,7 +1,6 @@
 <?php
 
-namespace Drupal\cypress\TestSite;
-
+use Drupal\cypress\TestSite\CypressTestSetup;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\node\Entity\NodeType;
 

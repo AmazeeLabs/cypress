@@ -3,9 +3,7 @@
 namespace Drupal\cypress\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Consolidation\SiteProcess\Util\Tty;
 use Drupal\Component\Utility\NestedArray;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\cypress\CypressInterface;
 use Drush\Commands\DrushCommands;
 use Symfony\Component\Filesystem\Filesystem;

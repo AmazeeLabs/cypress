@@ -7,4 +7,4 @@ parameters:
   cypress.test_suites:
     features: 'features'
   # The drush executable to use when executing drush in test sites.
-  cypress.executable.drush: 'drush'
+  cypress.executable.drush: 'vendor/bin/drush'
