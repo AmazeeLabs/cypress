@@ -14,11 +14,11 @@ Given(/^"([^"]*)" contains a new content type "([^"]*)"$/, function () {
 
 // When the test uses 'cy.drupalInstall' to install from "features/config"
 When(/^the test uses 'cy.drupalInstall' to install from "([^"]*)"$/, function (config) {
-  cy.drupalInstall('minimal', null, config);
+  cy.drupalInstall({profile: 'minimal', config: config});
 });
 // When the test uses 'cy.drupalInstall' to install from "features/config" from a install cache file "features/install-cache.zip"
 When(/^the test uses 'cy.drupalInstall' to install from "([^"]*)" from a install cache file "([^"]*)"$/, function (config, installCache) {
-  cy.drupalInstall('minimal', null, config, installCache);
+  cy.drupalInstall({profile: 'minimal', config: config, cache: installCache});
 });
 
 // And the test accesses the content type listing

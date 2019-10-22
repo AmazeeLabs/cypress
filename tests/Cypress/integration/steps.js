@@ -6,7 +6,9 @@ const langCodes = {
 };
 
 beforeEach(() => {
-  cy.drupalInstall('testing', 'cypress:integration/CypressTestSiteInstallScript.php');
+  cy.drupalInstall({
+    setup: 'cypress:integration/CypressTestSiteInstallScript.php',
+  });
 });
 
 afterEach(() => {
