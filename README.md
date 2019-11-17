@@ -175,6 +175,13 @@ run `drush updb -y` and `drush cim -y`.
 cy.drupalInstall({cache: '../install-cache.zip'});
 ```
 
+Using the `strictConfigCheck` flag, Drupal config checking can be disabled. This
+only makes sense in combination with a `config` directory.
+
+```javascript
+cy.drupalInstall({strictConfigCheck: false});
+```
+
 ### `cy.drupalUninstall`
 
 This should be called at the end of each test case (preferrably in `afterEach`),
