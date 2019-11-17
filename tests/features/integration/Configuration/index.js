@@ -16,6 +16,20 @@ Given(/^"([^"]*)" contains a new content type "([^"]*)"$/, function () {
 When(/^the test uses 'cy.drupalInstall' to install from "([^"]*)"$/, function (config) {
   cy.drupalInstall({profile: 'minimal', config: config});
 });
+
+// When the test uses 'cy.drupalInstall' to install from "features/config" with 'strictConfigCheck' disabled
+When(/^the test uses 'cy.drupalInstall' to install from "([^"]*)" with 'strictConfigCheck' disabled$/, function (config) {
+  cy.drupalInstall({profile: 'minimal', config: config, strictConfigCheck: false});
+});
+
+// Then the install procedure should not fail
+Then(/^the install procedure should not fail$/, function () {
+});
+
+// And the config file "system.site.yml" contains a unknown property "foo" with value "bar"
+When(/^the config file "system.site.yml" contains a unknown property "foo" with value "bar"$/, function () {
+});
+
 // When the test uses 'cy.drupalInstall' to install from "features/config" from a install cache file "features/install-cache.zip"
 When(/^the test uses 'cy.drupalInstall' to install from "([^"]*)" from a install cache file "([^"]*)"$/, function (config, installCache) {
   cy.drupalInstall({profile: 'minimal', config: config, cache: installCache});

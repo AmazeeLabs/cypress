@@ -16,6 +16,11 @@ declare namespace Cypress {
     config?: string
 
     /**
+     * Enable or disable strict config checking.
+     */
+    strictConfigCheck?: boolean
+
+    /**
      * A Drupal test setup script.
      *
      * The path should be prefixed with the test suite's name as scheme.

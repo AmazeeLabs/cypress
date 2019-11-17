@@ -65,6 +65,7 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
    * Adds setup caching.
    */
   public function setup($profile = 'testing', $setup_class = NULL, $langcode = 'en') {
+    $this->strictConfigSchema = getenv('DRUPAL_CONFIG_CHECK') !== 'false';
     $dbUrl = parse_url(getenv('SIMPLETEST_DB'));
     // Currently cached tests setups are only supported with sqlite.
     if ($dbUrl['scheme'] !== 'sqlite') {
