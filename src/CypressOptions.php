@@ -11,7 +11,7 @@ class CypressOptions {
    * Fixed configuration options that will always take precedence.
    */
   const FIXED = [
-    'testFiles' => '**/*.feature',
+    'testFiles' => '**/**/*.feature',
     'ignoreTestFiles' => ['*.js', '*.php'],
     'integrationFolder' => 'integration',
     'pluginsFile' => 'plugins.js',
