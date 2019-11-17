@@ -3,6 +3,7 @@ cypress.entity_url:
   defaults:
     _controller: '\Drupal\cypress\Controller\EntityController::entityRedirect'
   requirements:
+    # Access is checked in controller.
     _access: 'TRUE'
 
 cypress.script:
@@ -11,5 +12,6 @@ cypress.script:
   defaults:
     _controller: '\Drupal\cypress\Controller\ScriptController::execute'
   requirements:
+    # Access is checked in controller.
     _access: 'TRUE'
 
