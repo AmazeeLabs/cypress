@@ -45,3 +45,17 @@ When(/^the test accesses the content type listing$/, function () {
 Then(/^there should be a content type called "([^"]*)"$/, function (type) {
   cy.contains(type);
 });
+
+// And the the "name" property of "system.site.yml" has been changed to "Drupal loves Cypress"
+When(/^the the "name" property of "system.site.yml" has been changed to "Drupal loves Cypress"$/, function () {
+  cy.drupalInstall({profile: 'minimal', config: "features/config", cache: "features/install-cache.zip"});
+  cy.drupalScript('features:integration/Configuration/change-site-name.php');
+  cy.drupalUninstall();
+});
+
+// Then the site name is "Drupal loves Cypress"
+Then(/^the site name is "([^"]*)"$/, function (name) {
+  cy.drupalScript('features:integration/Configuration/revert-site-name.php');
+  cy.visit('/');
+  cy.get('#block-stark-branding').contains(name);
+});
