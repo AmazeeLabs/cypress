@@ -163,16 +163,18 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
       $settingsFile = str_replace('APP_ROOT', $this->appRoot, $settingsFile);
       $this->fileSystem->dumpFile($siteDir . '/settings.php', $settingsFile);
 
-      $user_agent = drupal_generate_test_ua($this->databasePrefix);
-      foreach ([
-                 ['vendor/bin/drush', 'cr'],
-                 ['vendor/bin/drush', 'updb' , '-y'],
-                 ['vendor/bin/drush', 'cim' , '-y'],
-                 ['vendor/bin/drush', 'cr' , '-y'],
-               ] as $command) {
-        (new Process($command, getenv('DRUPAL_APP_ROOT'), [
-          'HTTP_USER_AGENT' => $user_agent
-        ] + $_SERVER))->mustRun();
+      if (getenv('DRUPAL_CONFIG_DIR')) {
+        $user_agent = drupal_generate_test_ua($this->databasePrefix);
+        foreach ([
+                   ['vendor/bin/drush', 'cr'],
+                   ['vendor/bin/drush', 'updb' , '-y'],
+                   ['vendor/bin/drush', 'cim' , '-y'],
+                   ['vendor/bin/drush', 'cr' , '-y'],
+                 ] as $command) {
+          (new Process($command, getenv('DRUPAL_APP_ROOT'), [
+              'HTTP_USER_AGENT' => $user_agent
+            ] + $_SERVER))->mustRun();
+        }
       }
     }
   }
