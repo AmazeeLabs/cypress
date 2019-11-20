@@ -23,6 +23,9 @@ Apart from standard system requirements, you will need [Composer] and [npm]
 available on your system first. From there, this is shortest path to get it up
 and running:
 
+[Composer]: https://getcomposer.org/
+[npm]: https://www.npmjs.com/get-npm
+
 1. Download and extract Drupal
    ```shell script
    curl -O https://ftp.drupal.org/files/projects/drupal-8.7.8.tar.gz
