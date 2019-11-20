@@ -5,11 +5,16 @@ namespace Drupal\cypress\Commands;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\cypress\CypressInterface;
+use Drupal\cypress\CypressRootFactory;
 use Drush\Commands\DrushCommands;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * Cypress drush commands.
+ */
 class CypressCommands extends DrushCommands {
+
   protected $cypress;
   protected $testDirectories;
   protected $fileSystem;
@@ -28,9 +33,10 @@ class CypressCommands extends DrushCommands {
    */
   public function list() {
     $rows = [];
+    $length = max(array_map('strlen', array_keys($this->testDirectories)));
     foreach ($this->testDirectories as $id => $dir) {
       $rows[] = [
-        'Suite' => trim($id),
+        'Suite' => str_pad(trim($id), $length) . ' :',
         'Directory' => $this->fileSystem->makePathRelative($dir, $this->appRoot),
       ];
     }
@@ -67,6 +73,7 @@ class CypressCommands extends DrushCommands {
 
   /**
    * @command cypress:init
+   * @description Initiate the cypress environment.
    */
   public function init() {
     if ($this->setupTestingServices()) {
@@ -77,6 +84,7 @@ class CypressCommands extends DrushCommands {
 
   /**
    * @command cypress:open
+   * @description Open the cypress interface.
    */
   public function open() {
     if ($this->setupTestingServices()) {
@@ -87,6 +95,7 @@ class CypressCommands extends DrushCommands {
 
   /**
    * @command cypress:run
+   * @description Run cypress tests in a headless browser.
    * @param spec
    *   The specs to run. Folders are relative to the Cypress environment.
    * @option tags
@@ -100,6 +109,24 @@ class CypressCommands extends DrushCommands {
       }
       $this->cypress->run($options);
     }
+  }
+
+  /**
+   * @command cypress:clear
+   * @description Clear cypress and simpletest caches.
+   */
+  public function clear() {
+    $this->fileSystem->remove(implode(
+      '/',
+      [
+        $this->appRoot,
+        CypressRootFactory::CYPRESS_ROOT_DIRECTORY,
+        'cache',
+      ]
+    ));
+    $this->logger->notice('Cypress caches cleared.');
+    $this->fileSystem->remove($this->appRoot . '/sites/simpletest');
+    $this->logger->notice('Simpletest sites removed.');
   }
 }
 
