@@ -97,7 +97,7 @@ class CypressCommands extends DrushCommands {
    * @command cypress:run
    * @description Run cypress tests in a headless browser.
    * @param spec
-   *   The specs to run. Folders are relative to the Cypress environment.
+   *   The specs to run. Prefixed with the test suite. `drush cypress:run cypress:integration/Session.feature`
    * @option tags
    *   The tags to run.
    */
@@ -105,6 +105,14 @@ class CypressCommands extends DrushCommands {
     if ($this->setupTestingServices()) {
       $this->logger()->notice('Running Cypress headless mode.');
       if ($spec) {
+        $url = parse_url($spec);
+        $spec = 'integration/' . $url['scheme'];
+        if (pathinfo($url['path'], PATHINFO_EXTENSION) === 'feature') {
+          $spec .= '/' . $url['path'];
+        }
+        else {
+          $spec .= '/' . $url['path'] . '/**/*.*';
+        }
         $options['spec'] = $spec;
       }
       $this->cypress->run($options);

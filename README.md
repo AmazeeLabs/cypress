@@ -128,6 +128,52 @@ containing certain files or directories.
    reusable commands.
    
    
+## Drush commands
+
+The module comes with list of simple drush commands.
+
+### `drush cypress:list`
+
+Simply lists all discovered test suites. Nothing fancy.
+
+### `drush cypress:run`
+
+Will run all or a specific set of test suites. Also accepts an option to define
+[tags] that should be run.
+[tags]: https://github.com/TheBrainFamily/cypress-cucumber-preprocessor#running-tagged-tests
+
+*Examples:*
+```shell script
+# Run all test suites
+drush cypress:run
+
+# Run all tests of a specific suite
+drush cypress:run mytestsuite
+
+# Run all tests within a folder in a specific suite
+drush cypress:run mytestsuite:sub/folder
+
+# Run a specific spec file
+drush cypress:run mytestsuite:sub/folder/Fancy.feature
+
+# Run all tests matching a certain tags expression
+drush cypress:run --tags "@Completed and @Issue-123"
+
+# Both options can be combined
+drush cypress:run mytestsuite:sub/folder --tags "@Completed and @Issue-123"
+```
+
+### `drush cypress:open`
+
+Starts the Cypress user interface for running tests interactively.
+
+### `drush cypress:init`
+
+Rebuilds the Cypress environment. This is automatically invoked when running
+`drush cypress:run` or `drush cypress:open`, but can be used if you need to run
+cypress directly from within `drupal-cypress-environment`.
+   
+   
 ## Predefined commands
 
 The Cypress module comes with a set of predefined commands that can
