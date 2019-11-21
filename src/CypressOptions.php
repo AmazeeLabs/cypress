@@ -24,6 +24,7 @@ class CypressOptions {
   const DEFAULT = [
     'baseUrl' => 'http://localhost:8888',
     'video' => FALSE,
+    'watchForFileChanges' => FALSE,
   ];
 
   const ENVIRONMENT = [
