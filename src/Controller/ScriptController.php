@@ -23,21 +23,26 @@ class ScriptController extends ControllerBase {
        new Response('Request body has to be JSON and has to contain at least the "script" key.', 400);
     }
 
-    $url = parse_url($content->script);
-    $suite = $url['scheme'];
-    $path = $url['path'];
-
-    $suites = \Drupal::getContainer()->get('cypress.test_directories');
-
-    if (!array_key_exists($suite, $suites)) {
-      return new Response('Unknown test suite "' . $suite . '".', 404);
+    $suite = FALSE;
+    $path = $content->script;
+    if (strpos($path, ':') !== FALSE) {
+      list($suite, $path) = explode(':', $content->script);
     }
-    if (!file_exists($suites[$suite] . '/' . $path)) {
+
+    if ($suite) {
+      $suites = \Drupal::getContainer()->get('cypress.test_directories');
+      if (!array_key_exists($suite, $suites)) {
+        return new Response('Unknown test suite "' . $suite . '".', 404);
+      }
+      $path = $suites[$suite] . '/' . $path;
+
+    }
+    if (!file_exists($path)) {
       return new Response('File "' . $path . '" not found in suite "' . $suite . ' (' . $suites[$suite] . ')".', 404);
     }
 
     ob_start();
-    include $suites[$suite] . '/' . $path;
+    include $path;
     $response = ob_get_clean();
 
     return new Response($response);

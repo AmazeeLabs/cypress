@@ -105,13 +105,13 @@ class CypressCommands extends DrushCommands {
     if ($this->setupTestingServices()) {
       $this->logger()->notice('Running Cypress headless mode.');
       if ($spec) {
-        $url = parse_url($spec);
-        $spec = 'integration/' . $url['scheme'];
-        if (pathinfo($url['path'], PATHINFO_EXTENSION) === 'feature') {
-          $spec .= '/' . $url['path'];
+        if (strpos($spec, ':') !== FALSE) {
+          list($suite, $spec) = explode(':', $spec);
+          $spec = 'integration/' . $suite . '/' . $spec;
         }
-        else {
-          $spec .= '/' . $url['path'] . '/**/*.*';
+
+        if (!pathinfo($spec, PATHINFO_EXTENSION) === 'feature') {
+          $spec .= '/**/*.*';
         }
         $options['spec'] = $spec;
       }
