@@ -414,7 +414,7 @@ class CachedInstallation {
       $files[$file->getRelativePath() . '/' . $file->getBasename()] = $file->getRealPath();
     }
 
-    $this->zippyCompress($this->appRoot . '/' . $this->installCache, $files);
+    $this->zippyCompress($files, $this->appRoot . '/' . $this->installCache);
   }
 
   /**
