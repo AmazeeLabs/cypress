@@ -117,10 +117,10 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
       function () {
         $user_agent = drupal_generate_test_ua($this->databasePrefix);
         foreach ([
-                   ['vendor/bin/drush', 'cr'],
-                   ['vendor/bin/drush', 'updb', '-y'],
-                   ['vendor/bin/drush', 'cim', '-y'],
-                   ['vendor/bin/drush', 'cr', '-y'],
+                   [getenv('DRUPAL_DRUSH'), 'cr'],
+                   [getenv('DRUPAL_DRUSH'), 'updb', '-y'],
+                   [getenv('DRUPAL_DRUSH'), 'cim', '-y'],
+                   [getenv('DRUPAL_DRUSH'), 'cr', '-y'],
                  ] as $command) {
           (new Process(
             $command, getenv('DRUPAL_APP_ROOT'), [

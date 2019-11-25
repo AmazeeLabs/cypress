@@ -73,6 +73,7 @@ Cypress.Commands.add('drupalInstall', (options) => {
       'DRUPAL_CONFIG_DIR': options.config,
       'DRUPAL_APP_ROOT': Cypress.env('DRUPAL_APP_ROOT'),
       'DRUPAL_INSTALL_CACHE': options.cache,
+      'DRUPAL_DRUSH': Cypress.env('DRUPAL_DRUSH') || 'drush',
     },
     timeout: 3000000
   }).then(result => {
