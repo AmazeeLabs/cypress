@@ -1,11 +1,11 @@
 <?php
 use Drupal\node\Entity\Node;
 
-/** @var $args */
+/** @var $args object */
 
 $node = Node::create([
   'type' => 'page',
-  'title' => 'Testpage',
+  'title' => $args->title,
 ]);
 $node->save();
 echo $node->id();

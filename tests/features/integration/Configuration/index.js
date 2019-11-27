@@ -35,6 +35,13 @@ When(/^the test uses 'cy.drupalInstall' to install from "([^"]*)" from a install
   cy.drupalInstall({profile: 'minimal', config: config, cache: installCache});
 });
 
+// And there is no "features/install-cache.test.zip"
+Given(/^there is no "([^"]*)"$/, function (file) {
+  cy.exec('rm ../' + file , {
+    failOnNonZeroExit: false
+  });
+});
+
 // And the test accesses the content type listing
 When(/^the test accesses the content type listing$/, function () {
   cy.drupalSession({user: 'admin'});

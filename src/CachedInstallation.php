@@ -267,10 +267,17 @@ class CachedInstallation {
     // Add all update- or cache-relevant code files to the cache id.
     $finder = new Finder();
     $finder
+      ->name('*.theme')
+      ->name('*.module')
       ->name('*.install')
       ->name('*.post_update.php')
       ->name('*.yml');
-    $finder->files()->in($this->appRoot);
+
+    $finder->files()->in([
+      $this->appRoot . '/core',
+      $this->appRoot . '/themes',
+      $this->appRoot . '/modules',
+    ]);
 
     foreach ($finder as $file) {
       $cacheId[] = md5(file_get_contents($file->getPath() . '/' . $file->getFilename()));
