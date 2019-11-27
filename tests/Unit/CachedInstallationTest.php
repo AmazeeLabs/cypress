@@ -57,6 +57,12 @@ class CachedInstallationTest extends UnitTestCase {
         ],
       ],
       'drupal' => [
+        'themes' => [
+          'y' => [
+            'y.theme' => 'foo',
+            'y.libraries.yml' => 'foo',
+          ],
+        ],
         'modules' => [
           'x' => [
             'x.module' => 'foo',
