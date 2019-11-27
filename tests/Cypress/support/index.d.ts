@@ -68,6 +68,13 @@ declare namespace Cypress {
     [key: string]: string
   }
 
+  /**
+   * A nested dictionary of arguments that can be passed to a script.
+   */
+  interface ScriptArguments {
+    [key: string]: string | ScriptArguments
+  }
+
   interface Chainable<Subject> {
     /**
      * Install Drupal with a set of options:
@@ -100,13 +107,14 @@ declare namespace Cypress {
      * The script path uses the test suite's name as scheme:
      *
      * ```
-     * cy.drupalScript("cypress:integration/Scripts/testPage.php");
+     * cy.drupalScript("cypress:integration/Scripts/testPage.php", {title: "Test"});
      * ```
      *
      * @param script
+     * @param args
      * @param arguments
      */
-    drupalScript(script: string): Chainable<Subject>
+    drupalScript(script: string, args: ScriptArguments): Chainable<Subject>
 
     /**
      * Initiate a Drupal session.

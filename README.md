@@ -255,8 +255,12 @@ setup or other tasks that don't have to be run through the user interface. The
 script is executed in context of a fully booted Drupal environment and has
 access to the container much like `drush scr`.
 
+The first argument is the script path, relative to your test suite. The second
+an arbitrary context object that will be passed to the script as an `$args` 
+variable.
+
 ```javascript
-cy.drupalScript('cypress:integration/Scripts/testPage.php');
+cy.drupalScript('cypress:integration/Scripts/testPage.php', {title: "Test page"});
 ```
 
 ### `cy.drupalSession`

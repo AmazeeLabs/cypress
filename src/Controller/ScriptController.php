@@ -41,6 +41,8 @@ class ScriptController extends ControllerBase {
       return new Response('File "' . $path . '" not found in suite "' . $suite . ' (' . $suites[$suite] . ')".', 404);
     }
 
+    $args = $content->args ?? [];
+
     ob_start();
     include $path;
     $response = ob_get_clean();
