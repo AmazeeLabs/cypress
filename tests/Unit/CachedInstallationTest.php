@@ -57,6 +57,7 @@ class CachedInstallationTest extends UnitTestCase {
         ],
       ],
       'drupal' => [
+        'core' => [],
         'themes' => [
           'y' => [
             'y.theme' => 'foo',
