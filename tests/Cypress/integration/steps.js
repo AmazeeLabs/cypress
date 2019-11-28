@@ -16,7 +16,7 @@ afterEach(() => {
 });
 
 // Given a test case uses 'cy.drupalSession' to authenticate in as "admin"
-Given(/^the test case uses 'cy.drupalSession' to authenticate in as "([^"]*)"$/, function (account) {
+Given(/^the test case uses 'cy.drupalSession' to authenticate as "([^"]*)"$/, function (account) {
   cy.drupalSession({user: account});
 });
 
