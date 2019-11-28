@@ -7,6 +7,12 @@ parameters:
   cypress.executable.drush: 'drush'
 
 services:
+  # Remove error headers since they might break cypress.
+  cypress.event_subscriber.remove_error_headers:
+    class: Drupal\cypress\EventSubscriber\RemoveErrorHeadersSubscriber
+    tags:
+      - { name: 'event_subscriber' }
+
   # Directory parameters
   cypress.root.factory:
     class: Drupal\cypress\CypressRootFactory

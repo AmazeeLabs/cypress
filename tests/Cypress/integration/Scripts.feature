@@ -9,7 +9,7 @@ Feature: Script execution
     Then the status test shows the test site as site directory
 
   Scenario: Execute a Drupal script
-    Given the test case uses 'cy.drupalSession' to authenticate in as "admin"
+    Given the test case uses 'cy.drupalSession' to authenticate as "admin"
     And the test case uses 'cy.drupalScript' to create a page with title "Testpage"
     When the test accesses the main content listing
     Then there should be an entry for the page with title "Testpage"
