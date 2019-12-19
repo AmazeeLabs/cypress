@@ -74,4 +74,9 @@ class CypressWorkspaceNegotiator implements WorkspaceNegotiatorInterface {
    */
   public function setActiveWorkspace(WorkspaceInterface $workspace) {}
 
+  /**
+   * {@inheritDoc}
+   */
+  public function unsetActiveWorkspace() {}
+
 }
