@@ -77,7 +77,12 @@ Cypress.Commands.add('drupalInstall', (options) => {
     },
     timeout: 3000000
   }).then(result => {
-    const installData = JSON.parse(result.stdout);
+    let installData;
+    try {
+      installData = JSON.parse(result.stdout);
+    } catch (e) {
+      throw new Error(`Cannot parse JSON:\n${result.stdout}`);
+    }
     Cypress.env('DRUPAL_DB_PREFIX', installData.db_prefix);
     Cypress.env('DRUPAL_SITE_PATH', installData.site_path);
     Cypress.env('SIMPLETEST_USER_AGENT', installData.user_agent);
