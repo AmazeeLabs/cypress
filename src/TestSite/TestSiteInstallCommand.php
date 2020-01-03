@@ -109,25 +109,34 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
     /** @var \Drupal\TestSite\TestSetupInterface $setupScript */
     $setupScript = new $setup_class();
 
+    $drush = getenv('DRUPAL_DRUSH') ?: 'drush';
+    $drushEnv = ['HTTP_USER_AGENT' => drupal_generate_test_ua($this->databasePrefix)] + $_SERVER;
+
     $cachedInstallation->install(
-      function () use ($setupScript) {
+      function () use ($setupScript, $drush, $drushEnv) {
         $this->installDrupal();
+
+        if (getenv('DRUPAL_CONFIG_DIR')) {
+          // \Drupal\TestSite\Commands\TestSiteInstallCommand::installDrupal()
+          // does some modifications to the existing configuration. For example,
+          // it changes the default theme.
+          // Avoid this with an additional config import.
+          $command = [$drush, 'cim', '-y'];
+          (new Process($command, getenv('DRUPAL_APP_ROOT'), $drushEnv, NULL, 0))
+            ->mustRun();
+        }
+
         $setupScript->setup();
       },
-      function () {
-        $drush = getenv('DRUPAL_DRUSH') ?: 'drush';
-        $user_agent = drupal_generate_test_ua($this->databasePrefix);
+      function () use ($drush, $drushEnv) {
         foreach ([
                    [$drush, 'cr'],
                    [$drush, 'updb', '-y'],
                    [$drush, 'cim', '-y'],
                    [$drush, 'cr', '-y'],
                  ] as $command) {
-          (new Process(
-            $command, getenv('DRUPAL_APP_ROOT'), [
-              'HTTP_USER_AGENT' => $user_agent
-            ] + $_SERVER
-            , null, 0))->mustRun();
+          (new Process($command, getenv('DRUPAL_APP_ROOT'), $drushEnv, null, 0))
+            ->mustRun();
         }
       }
     );
