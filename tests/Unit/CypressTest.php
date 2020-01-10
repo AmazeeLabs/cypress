@@ -55,7 +55,8 @@ class CypressTest extends UnitTestCase {
   public function testCypressRun() {
     $this->processManager->run(
       ['/app/node_modules/.bin/cypress', 'run', '--spec', 'bar'],
-      '/app/drupal-cypress-environment'
+      '/app/drupal-cypress-environment',
+      Cypress::ENVIRONMENT_VARIABLES
     )->shouldBeCalledOnce();
     $this->cypress->run($this->options);
   }
@@ -63,7 +64,8 @@ class CypressTest extends UnitTestCase {
   public function testCypressOpen() {
     $this->processManager->run(
       ['/app/node_modules/.bin/cypress', 'open', '--spec', 'bar'],
-      '/app/drupal-cypress-environment'
+      '/app/drupal-cypress-environment',
+      Cypress::ENVIRONMENT_VARIABLES
     )->shouldBeCalledOnce();
     $this->cypress->open($this->options);
   }

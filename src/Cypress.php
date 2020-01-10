@@ -8,6 +8,17 @@ namespace Drupal\cypress;
 class Cypress implements CypressInterface {
 
   /**
+   * Environment variables to be used with Cypress.
+   */
+  const ENVIRONMENT_VARIABLES = [
+    // Increase Node.js max header size to prevent issues with Drupal's
+    // debug_cacheability_headers option which is enabled by
+    // \Drupal\Core\Test\FunctionalTestSetupTrait::initSettings() during the
+    // Drupal installation.
+    'NODE_OPTIONS' => '--max-http-header-size=80000',
+  ];
+
+  /**
    * A process manager to execute cypress commands.
    *
    * @var \Drupal\cypress\ProcessManagerInterface
@@ -133,7 +144,7 @@ class Cypress implements CypressInterface {
     $args = $cypressOptions->getCliOptions();
     array_unshift($args, 'run');
     array_unshift($args, $this->cypressExecutable);
-    $this->processManager->run($args, $this->cypressRoot);
+    $this->processManager->run($args, $this->cypressRoot, self::ENVIRONMENT_VARIABLES);
   }
 
   /**
@@ -144,6 +155,6 @@ class Cypress implements CypressInterface {
     $args = $cypressOptions->getCliOptions();
     array_unshift($args, 'open');
     array_unshift($args, $this->cypressExecutable);
-    $this->processManager->run($args, $this->cypressRoot);
+    $this->processManager->run($args, $this->cypressRoot, self::ENVIRONMENT_VARIABLES);
   }
 }

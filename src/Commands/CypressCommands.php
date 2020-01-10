@@ -107,10 +107,10 @@ class CypressCommands extends DrushCommands {
       if ($spec) {
         if (strpos($spec, ':') !== FALSE) {
           list($suite, $spec) = explode(':', $spec);
-          $spec = 'integration/' . $suite . '/' . $spec;
+          $spec = $suite . '/' . $spec;
         }
-
-        if (!pathinfo($spec, PATHINFO_EXTENSION) === 'feature') {
+        $spec = 'integration/' . $spec;
+        if (pathinfo($spec, PATHINFO_EXTENSION) !== 'feature') {
           $spec .= '/**/*.*';
         }
         $options['spec'] = $spec;

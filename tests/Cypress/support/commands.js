@@ -77,7 +77,12 @@ Cypress.Commands.add('drupalInstall', (options) => {
     },
     timeout: 3000000
   }).then(result => {
-    const installData = JSON.parse(result.stdout);
+    let installData;
+    try {
+      installData = JSON.parse(result.stdout);
+    } catch (e) {
+      throw new Error(`Cannot parse JSON:\n${result.stdout}`);
+    }
     Cypress.env('DRUPAL_DB_PREFIX', installData.db_prefix);
     Cypress.env('DRUPAL_SITE_PATH', installData.site_path);
     Cypress.env('SIMPLETEST_USER_AGENT', installData.user_agent);
@@ -96,4 +101,25 @@ Cypress.Commands.add('drupalUninstall', () => {
 Cypress.Commands.add('drupalVisitEntity', (type, query, link = 'canonical') => {
   const params = Object.keys(query).map(key => `${key}=${encodeURI(query[key])}`).join('&');
   cy.visit(`/cypress/entity/${type}/${link}?${params}`);
+});
+
+Cypress.Commands.overwrite('exec', (originalFn, command, options) => {
+  // failOnNonZeroExit is true by default.
+  const failOnNonZeroExit = (
+    !options ||
+    !options.hasOwnProperty('failOnNonZeroExit') ||
+    options.failOnNonZeroExit
+  );
+  return originalFn(command, {...options, failOnNonZeroExit: false}).then(result => {
+    if (failOnNonZeroExit && result.code) {
+
+      // Show the full error message instead of the default trimmed one. This is
+      // a workaround for https://github.com/cypress-io/cypress/issues/5470
+      throw new Error(`Execution of "${command}" failed
+      Exit code: ${result.code}
+      Stdout:\n${result.stdout}
+      Stderr:\n${result.stderr}`);
+    }
+    return result;
+  });
 });
