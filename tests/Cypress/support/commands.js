@@ -59,9 +59,11 @@ Cypress.Commands.add('drush', command => {
 });
 
 Cypress.Commands.add('drupalScript', (script, args) => {
-  cy.request('POST', '/cypress/script', {
+  return cy.request('POST', '/cypress/script', {
     script,
     args,
+  }).then(response => {
+    return response.body;
   });
 });
 
