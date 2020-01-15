@@ -44,7 +44,12 @@ class ScriptController extends ControllerBase {
     $args = $content->args ?? [];
 
     ob_start();
-    include $path;
+    try {
+      include $path;
+    }
+    catch (\Throwable $e) {
+      return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
     $response = ob_get_clean();
 
     return new Response($response);
