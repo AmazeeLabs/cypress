@@ -110,10 +110,9 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
     $setupScript = new $setup_class();
 
     $drush = getenv('DRUPAL_DRUSH') ?: 'drush';
-    $drushEnv = ['HTTP_USER_AGENT' => drupal_generate_test_ua($this->databasePrefix)] + $_SERVER;
 
     $cachedInstallation->install(
-      function () use ($setupScript, $drush, $drushEnv) {
+      function () use ($setupScript, $drush) {
         $this->installDrupal();
 
         if (getenv('DRUPAL_CONFIG_DIR')) {
@@ -122,13 +121,15 @@ class TestSiteInstallCommand extends CoreTestSiteInstallCommand {
           // it changes the default theme.
           // Avoid this with an additional config import.
           $command = [$drush, 'cim', '-y'];
+          $drushEnv = ['HTTP_USER_AGENT' => drupal_generate_test_ua($this->databasePrefix)] + $_SERVER;
           (new Process($command, getenv('DRUPAL_APP_ROOT'), $drushEnv, NULL, 0))
             ->mustRun();
         }
 
         $setupScript->setup();
       },
-      function () use ($drush, $drushEnv) {
+      function () use ($drush) {
+        $drushEnv = ['HTTP_USER_AGENT' => drupal_generate_test_ua($this->databasePrefix)] + $_SERVER;
         foreach ([
                    [$drush, 'cr'],
                    [$drush, 'updb', '-y'],
