@@ -12,13 +12,13 @@
         },
         "drush": {
             "services": {
-                "drush.services.yml": "^10"
+                "drush.services.yml": "^9"
             }
         }
     },
     "require": {
         "ext-json": "*",
         "alchemy/zippy": "^0.4.9",
-        "drush/drush": "^10.0.0"
+        "drush/drush": "^9.0.0"
     }
 }
