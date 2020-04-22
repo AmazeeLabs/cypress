@@ -45,7 +45,7 @@ install:
   # Install Drupal development dependencies.
   - composer --working-dir=$DRUPAL_BUILD_DIR install
   # Install Drush
-  - composer --working-dir=$DRUPAL_BUILD_DIR require drush/drush alchemy/zippy
+  - composer --working-dir=$DRUPAL_BUILD_DIR require drush/drush:^10 alchemy/zippy
   # Upgrade phpunit to work with PHP 7
   - composer --working-dir=$DRUPAL_BUILD_DIR run-script drupal-phpunit-upgrade
   # Reference the module in the build site.
