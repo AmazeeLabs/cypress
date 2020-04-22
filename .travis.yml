@@ -47,7 +47,7 @@ install:
   # Install Drush
   - composer --working-dir=$DRUPAL_BUILD_DIR require drush/drush:^10 alchemy/zippy
   # Upgrade phpunit to work with PHP 7
-  - composer --working-dir=$DRUPAL_BUILD_DIR require phpunit/phpunit:^7 symfony/phpunit-bridge phpspec/prophecy sebastian/global-state:^2 sebastian/environment:^3.1 phpunit/php-code-coverage:^6
+  - composer --working-dir=$DRUPAL_BUILD_DIR require phpunit/phpunit:^7 symfony/phpunit-bridge phpspec/prophecy sebastian/global-state:^2 sebastian/environment:^3.1 phpunit/php-code-coverage:^6 mikey179/vfsstream
   # Reference the module in the build site.
   - ln -s $TRAVIS_BUILD_DIR $DRUPAL_BUILD_DIR/modules/cypress
   - ln -s $TRAVIS_BUILD_DIR/tests/features $DRUPAL_BUILD_DIR/features
