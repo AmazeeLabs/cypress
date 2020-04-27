@@ -21,7 +21,7 @@ env:
     - SIMPLETEST_DB=sqlite://localhost/sites/default/files/test.sqlite
     - DRUPAL_TEST_BASE_URL=http://localhost:8888
     - TRAVIS=true
-    - DRUPAL_VERSION=8.7.8
+    - DRUPAL_VERSION=8.8.5
     - DRUPAL_BUILD_DIR=$TRAVIS_BUILD_DIR/../drupal-$DRUPAL_VERSION
     - PATH=$PATH:$DRUPAL_BUILD_DIR/vendor/bin
 
@@ -45,9 +45,9 @@ install:
   # Install Drupal development dependencies.
   - composer --working-dir=$DRUPAL_BUILD_DIR install
   # Install Drush
-  - composer --working-dir=$DRUPAL_BUILD_DIR require drush/drush alchemy/zippy
+  - composer --working-dir=$DRUPAL_BUILD_DIR require drush/drush:^10 alchemy/zippy
   # Upgrade phpunit to work with PHP 7
-  - composer --working-dir=$DRUPAL_BUILD_DIR run-script drupal-phpunit-upgrade
+  - composer --working-dir=$DRUPAL_BUILD_DIR require phpunit/phpunit:^7 symfony/phpunit-bridge phpspec/prophecy sebastian/global-state:^2 sebastian/environment:^3.1 phpunit/php-code-coverage:^6 mikey179/vfsstream
   # Reference the module in the build site.
   - ln -s $TRAVIS_BUILD_DIR $DRUPAL_BUILD_DIR/modules/cypress
   - ln -s $TRAVIS_BUILD_DIR/tests/features $DRUPAL_BUILD_DIR/features

@@ -28,35 +28,35 @@ and running:
 
 1. Download and extract Drupal
    ```shell script
-   curl -O https://ftp.drupal.org/files/projects/drupal-8.7.8.tar.gz
-   tar -xvzf drupal-8.7.8.tar.gz
-   cd drupal-8.7.8
+   curl -O https://ftp.drupal.org/files/projects/drupal-8.8.5.tar.gz
+   tar -xvzf drupal-8.8.5.tar.gz
+   cd drupal-8.8.5
    ```
-   
+
 2. Install the Cypress Module and upgrade PHPUnit
    ```shell script
    composer require drupal/cypress
-   composer run-script drupal-phpunit-upgrade
+   composer require phpunit/phpunit:^7 symfony/phpunit-bridge phpspec/prophecy sebastian/global-state:^2 sebastian/environment:^3.1 phpunit/php-code-coverage:^6
    ```
-   
+
 3. Install the minimal profile and the Cypress module
    ```shell script
    php core/scripts/drupal install minimal
    drush en cypress -y
    ```
-   
+
 4. In case of doubt, loosen the directory permissions so the module can copy
    settings files for you. If you don't, it might ask you to do that yourself.
    ```shell script
    chmod 755 sites/default
    ```
-   
+
 5. Start a test server and run tests
    ```shell script
    vendor/bin/drush serve &
    vendor/bin/drush cypress:run
    ```
- 
+
 The test suite for the Cypress module itself, located in the `tests\Cypress`,
 should have been executed. They also serve as examples on how to write Cypress
 tests yourself.
@@ -111,7 +111,7 @@ A test suite can hook into the test framework in different ways by simply
 containing certain files or directories.
 
 1. `package.json`: If a test suite contains a `package.json` file, its
-   dependencies and additional settings will be merged into the global 
+   dependencies and additional settings will be merged into the global
    package that is automatically maintained in `drupal-cypress-environment`.
 2. `integration`: The actual tests and implementations. The modules uses the
    [Cucumber preprocessor] for Cypress in `nonGlobalStepDefinitions` mode. This
@@ -129,8 +129,8 @@ containing certain files or directories.
 5. `support/index.js`: That's the entry point for anything that would go into
    Cypress notion of `support` files. Here, for example, test suites can share
    reusable commands.
-   
-   
+
+
 ## Drush commands
 
 The module comes with list of simple drush commands.
@@ -175,8 +175,8 @@ Starts the Cypress user interface for running tests interactively.
 Rebuilds the Cypress environment. This is automatically invoked when running
 `drush cypress:run` or `drush cypress:open`, but can be used if you need to run
 cypress directly from within `drupal-cypress-environment`.
-   
-   
+
+
 ## Predefined commands
 
 The Cypress module comes with a set of predefined commands that can
@@ -214,8 +214,8 @@ cy.drupalInstall({setup: 'cypress:integration/CypressTestSiteInstallScript.php'}
 ```
 
 The `cache` property allows to define a persistent cache file that can be placed
-anywhere relative to the Drupal root directory. It can be used to maintain a 
-*cached* version of the installation to speed up exection on build servers as 
+anywhere relative to the Drupal root directory. It can be used to maintain a
+*cached* version of the installation to speed up exection on build servers as
 well as testing update procedures properly.
 After a site has been recreated from cache, the setup process will automatically
 run `drush updb -y` and `drush cim -y`.
@@ -256,7 +256,7 @@ script is executed in context of a fully booted Drupal environment and has
 access to the container much like `drush scr`.
 
 The first argument is the script path, relative to your test suite. The second
-an arbitrary context object that will be passed to the script as an `$args` 
+an arbitrary context object that will be passed to the script as an `$args`
 variable.
 
 ```javascript
