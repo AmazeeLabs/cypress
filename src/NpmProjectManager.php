@@ -83,6 +83,8 @@ class NpmProjectManager implements NpmProjectManagerInterface {
     }
 
     unset($merge['dependencies']);
+    // Re-read package.json since it could be modified by ensurePackageVersion.
+    $packageJson = json_decode(file_get_contents($this->packageDirectory . '/package.json'), TRUE);
     $packageJson = NestedArray::mergeDeep($packageJson, $merge);
 
     $this->fileSystem->dumpFile(
