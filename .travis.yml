@@ -37,6 +37,7 @@ before_install:
   - phpenv config-rm xdebug.ini
   # Composer  setup
   - composer self-update
+  - composer config -g github-oauth.github.com $COMPOSER_GITHUB_TOKEN
   # Download and unpack Drupal
   - curl -O https://ftp.drupal.org/files/projects/drupal-$DRUPAL_VERSION.tar.gz
   - tar -xf drupal-$DRUPAL_VERSION.tar.gz -C $TRAVIS_BUILD_DIR/../
